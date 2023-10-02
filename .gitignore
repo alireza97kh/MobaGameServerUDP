@@ -10,3 +10,4 @@ UserSettings/
 .vsconfig
 Assembly-CSharp.csproj
 MobaGameServerUDP.sln
+Temp/UnityLockfile

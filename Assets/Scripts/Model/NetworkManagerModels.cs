@@ -6,13 +6,18 @@ namespace NetworkManagerModels
 {
     public enum ClientToServerId : ushort
     {
-        validation = 1
+        Validation = 1,
+        SelectedHero = 2,
+        CharacterInput = 3
     }
+
 
     public enum ServerToClientId : ushort
     {
         validation = 1,
-        LobbyIsReady = 2
+        LobbyIsReady = 2,
+        AllHeroSelected = 3,
+        Sync = 4
     }
     [Serializable]
     public class ListWithChangeEvent<T> : List<T>
@@ -28,10 +33,60 @@ namespace NetworkManagerModels
 
         public new void Remove(T item)
 		{
-            Debug.LogError("Bingooo ");
             base.Remove(item);
-            Debug.LogError(Count);
             ItemRemoved?.Invoke(item);
+		}
+    }
+
+    [Serializable]
+    public class DictionaryWithEvent<T1, T2> : Dictionary<T1, T2>
+	{
+        public event Action<T1, T2> ItemAddeed;
+        public event Action<T1> ItemRemoved;
+
+        public new void Add(T1 key, T2 value)
+		{
+            base.Add(key, value);
+            ItemAddeed?.Invoke(key, value);
+		}
+
+        public new void Remove(T1 key)
+		{
+            base.Remove(key);
+            ItemRemoved?.Invoke(key);
+		}
+
+	}
+
+
+    [Serializable]
+    public class UsersHeroInLobby
+	{
+        public string userId;
+        public string heroId;
+        public UsersHeroInLobby() { }
+        public UsersHeroInLobby(string _userId, string _heroId)
+		{
+            userId = _userId;
+            heroId = _heroId;
+		}
+	}
+
+    [Serializable]
+    public class UsersHeroInLobbyList
+    {
+        public List<UsersHeroInLobby> usersData;
+        public UsersHeroInLobbyList()
+		{
+            usersData = new List<UsersHeroInLobby>();
+		}
+        public UsersHeroInLobbyList(List<UsersHeroInLobby> _list)
+		{
+            usersData = new List<UsersHeroInLobby>();
+			foreach (var item in _list)
+			{
+                usersData.Add(item);
+			}
 		}
     }
 
