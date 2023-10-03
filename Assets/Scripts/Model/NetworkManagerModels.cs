@@ -16,7 +16,8 @@ namespace NetworkManagerModels
     {
         validation = 1,
         LobbyIsReady = 2,
-        AllHeroSelected = 3,
+        HeroSelected = 3,
+        AllHeroSelected = 4,
         Sync = 4
     }
     [Serializable]

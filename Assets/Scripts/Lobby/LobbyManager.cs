@@ -34,7 +34,7 @@ public class LobbyManager : MonoBehaviour
 		{
             isFull = true;
             Message lobbyMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.LobbyIsReady);
-            lobbyMessage.AddString($"{lobbyKey} is Ready");
+            lobbyMessage.AddString(lobbyKey);
             NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyMessage, lobbyKey);
             StartGame();
         }
@@ -50,7 +50,7 @@ public class LobbyManager : MonoBehaviour
             Debug.Log("user Id is full");
             isFull = true;
             Message lobbyMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.LobbyIsReady);
-            lobbyMessage.AddString($"{lobbyKey} is Ready");
+            lobbyMessage.AddString(lobbyKey);
             NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyMessage, lobbyKey);
             StartGame();
         }
@@ -59,6 +59,30 @@ public class LobbyManager : MonoBehaviour
             DestroyImmediate(this);
         }
     }
+
+    public void OnUserSelectHero(ushort fromClientId, Message msg)
+	{
+        string userId = msg.GetString();
+        string heroId = msg.GetString();
+        usersInThisLobby[fromClientId].OnSelectedHero(heroId, userId, fromClientId, this);
+        numberOfSelectedHero++;
+        Debug.Log($"{userId} Selected Hero {heroId}");
+        Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.HeroSelected);
+        message.AddString(heroId);
+        message.AddString(userId);
+        NetworkManager.Instance.SendMessageToAllUsersInLobby(message, lobbyKey);
+		if (numberOfSelectedHero == usersInThisLobby.Count)
+		{
+            Debug.Log("All Hero Has been Selected ");
+            Message lobbyStartGameMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.AllHeroSelected);
+			foreach (var item in usersInThisLobby)
+			{
+                item.Value.Init();
+			}
+
+            NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyStartGameMessage, lobbyKey);
+		}
+	}
 	#endregion
 
 	#region Events
@@ -86,29 +110,28 @@ public class LobbyManager : MonoBehaviour
 	}
 
     #region MessageHandlers
-    [MessageHandler((ushort)ClientToServerId.SelectedHero)]
-    public static void OnUsersSelectedHero(ushort fromClientId, Message message)
-    {
-		if (Instance.usersInThisLobby.ContainsKey(fromClientId))
-		{
-            string heroId = message.GetString();
-            string userId = message.GetString();
-            Debug.LogError($"Selected Hero {heroId}  by {userId}");
-            Instance.usersInThisLobby[fromClientId].OnSelectedHero(heroId, userId);
-            Instance.numberOfSelectedHero++;
-			if (Instance.numberOfSelectedHero == Instance.maxCountOfUser)
-			{
-                Message msg = Message.Create(MessageSendMode.Reliable, ServerToClientId.AllHeroSelected);
-                List<UsersHeroInLobby> allUsersHeroData = new List<UsersHeroInLobby>();
+  //  public static void OnUsersSelectedHero(ushort fromClientId, Message message)
+  //  {
+		//if (Instance.usersInThisLobby.ContainsKey(fromClientId))
+		//{
+  //          string heroId = message.GetString();
+  //          string userId = message.GetString();
+  //          Debug.LogError($"Selected Hero {heroId}  by {userId}");
+  //          Instance.usersInThisLobby[fromClientId].OnSelectedHero(heroId, userId);
+  //          Instance.numberOfSelectedHero++;
+		//	if (Instance.numberOfSelectedHero == Instance.maxCountOfUser)
+		//	{
+  //              Message msg = Message.Create(MessageSendMode.Reliable, ServerToClientId.AllHeroSelected);
+  //              List<UsersHeroInLobby> allUsersHeroData = new List<UsersHeroInLobby>();
 				
-                foreach (var item in Instance.usersInThisLobby)
-                    allUsersHeroData.Add(new UsersHeroInLobby(item.Value.userId.ToString(), item.Value.selectedHeroId));
+  //              foreach (var item in Instance.usersInThisLobby)
+  //                  allUsersHeroData.Add(new UsersHeroInLobby(item.Value.userId.ToString(), item.Value.selectedHeroId));
 
-                msg.AddString(JsonUtility.ToJson(new UsersHeroInLobbyList(allUsersHeroData)));
-                NetworkManager.Instance.SendMessageToAllUsersInLobby(msg, Instance.lobbyKey);
-			}
-		}
-    }
+  //              msg.AddString(JsonUtility.ToJson(new UsersHeroInLobbyList(allUsersHeroData)));
+  //              NetworkManager.Instance.SendMessageToAllUsersInLobby(msg, Instance.lobbyKey);
+		//	}
+		//}
+  //  }
 	#endregion
 
 	#region Private Functions

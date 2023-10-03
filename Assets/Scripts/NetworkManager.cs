@@ -77,7 +77,15 @@ public class NetworkManager : SingletonBase<NetworkManager>
         serverMessage.AddString(Instance.currentLobbyTofill.lobbyKey);
         Instance.Server.Send(serverMessage, fromClientId);
     }
-
+    [MessageHandler((ushort)ClientToServerId.SelectedHero)]
+    public static void OnUsersSelectedHero(ushort fromClientId, Message message)
+    {
+        string lobbyId = message.GetString();
+        if (Instance.lobbyHash.ContainsKey(lobbyId))
+        {
+            Instance.lobbyHash[lobbyId].OnUserSelectHero(fromClientId, message);
+        }
+    }
     #endregion
 
 
