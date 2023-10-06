@@ -19,7 +19,8 @@ public class NetworkManager : SingletonBase<NetworkManager>
 	// Start is called before the first frame update
 	void Start()
     {
-        lobbyHash = new Dictionary<string, LobbyManager>();
+		Application.targetFrameRate = 60;
+		lobbyHash = new Dictionary<string, LobbyManager>();
         RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, true);
         Server = new Server();
         Server.Start(port, maxCountOfUsers);
@@ -64,6 +65,7 @@ public class NetworkManager : SingletonBase<NetworkManager>
     [MessageHandler((ushort)ClientToServerId.Validation)]
     public static void ValidateConnectedUser(ushort fromClientId, Message message)
     {
+        Debug.LogError("Validation");
         string userKey = message.GetString();
         if (Instance.currentLobbyTofill == null || Instance.currentLobbyTofill.isFull)
         {
@@ -85,6 +87,24 @@ public class NetworkManager : SingletonBase<NetworkManager>
         {
             Instance.lobbyHash[lobbyId].OnUserSelectHero(fromClientId, message);
         }
+    }
+
+    [MessageHandler((ushort)ClientToServerId.CharacterInput)]
+    public static void OnUserInputMessageGet(ushort fromClientId, Message message)
+	{
+        string lobbyId = message.GetString();
+		if (Instance.lobbyHash.ContainsKey(lobbyId))
+		{
+            Vector2 userInput = message.GetVector2();
+            Instance.lobbyHash[lobbyId].UserInputManager(fromClientId, userInput);
+		}
+    }
+
+    [MessageHandler((ushort)ClientToServerId.Ping)]
+    public static void OnPingMessageGet(ushort fromClientId, Message message)
+    {
+        Message pongMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.Pong);
+        Instance.SendMessageToCustomUser(pongMessage, fromClientId);
     }
     #endregion
 

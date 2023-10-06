@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbcc7743edd01ce4a89e7a2d948e4d29, type: 3}
+  m_Name: CreepActionScores
+  m_EditorClassIdentifier: 
+  Idle:
+    DoNothing: 0
+    KeepMoving: 1
+    MoveToEnemyCreep: 2
+    MoveToEnemyHero: 4
+    MoveToEnemyTower: 3
+    AttackToEnemyCreep: 5
+    AttackToEnemyHero: 7
+    AttackToEnemyTower: 6
+  Moving:
+    DoNothing: 0
+    KeepMoving: 1
+    MoveToEnemyCreep: 2
+    MoveToEnemyHero: 4
+    MoveToEnemyTower: 3
+    AttackToEnemyCreep: 5
+    AttackToEnemyHero: 7
+    AttackToEnemyTower: 6
+  Attacking:
+    DoNothing: 0
+    KeepMoving: 1
+    MoveToEnemyCreep: 2
+    MoveToEnemyHero: 4
+    MoveToEnemyTower: 3
+    AttackToEnemyCreep: 5
+    AttackToEnemyHero: 7
+    AttackToEnemyTower: 6
+  Dead:
+    DoNothing: 0
+    KeepMoving: 0
+    MoveToEnemyCreep: 0
+    MoveToEnemyHero: 0
+    MoveToEnemyTower: 0
+    AttackToEnemyCreep: 0
+    AttackToEnemyHero: 0
+    AttackToEnemyTower: 0

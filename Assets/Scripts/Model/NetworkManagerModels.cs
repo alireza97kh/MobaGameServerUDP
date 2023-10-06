@@ -6,19 +6,25 @@ namespace NetworkManagerModels
 {
     public enum ClientToServerId : ushort
     {
-        Validation = 1,
-        SelectedHero = 2,
-        CharacterInput = 3
+        Validation,
+        SelectedHero,
+        CharacterInput,
+        Ping
     }
+
 
 
     public enum ServerToClientId : ushort
     {
-        validation = 1,
-        LobbyIsReady = 2,
-        HeroSelected = 3,
-        AllHeroSelected = 4,
-        Sync = 4
+        validation,
+        LobbyIsReady,
+        HeroSelected,
+        AllHeroSelected,
+		CreateHero,
+        Pong,
+        CreateCreepGenerator,
+        Sync
+
     }
     [Serializable]
     public class ListWithChangeEvent<T> : List<T>

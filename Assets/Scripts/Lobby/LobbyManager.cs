@@ -5,11 +5,12 @@ using NetworkManagerModels;
 using Riptide;
 using Riptide.Utils;
 using UnityEngine.SceneManagement;
+using Dobeil;
 
 public class LobbyManager : MonoBehaviour
 {
     public static LobbyManager Instance = null;
-
+	public int tick = 10;
     public string lobbyKey;
     public bool isFull = false;
     public int maxCountOfUser = 1;
@@ -17,7 +18,10 @@ public class LobbyManager : MonoBehaviour
     public Transform team2Parent;
     public CharacterControllerClass characterPrefab;
     public DictionaryWithEvent<ushort, CharacterControllerClass> usersInThisLobby = new DictionaryWithEvent<ushort, CharacterControllerClass>();
+	public PlayersTeamData team1Data;
+	public PlayersTeamData team2Data;
 
+	public List<CreepGenerator> creepGenerators = new List<CreepGenerator>();
 
     int numberOfSelectedHero = 0;
     void Awake()
@@ -36,7 +40,6 @@ public class LobbyManager : MonoBehaviour
             Message lobbyMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.LobbyIsReady);
             lobbyMessage.AddString(lobbyKey);
             NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyMessage, lobbyKey);
-            StartGame();
         }
 		else if (usersInThisLobby.Count > maxCountOfUser)
 		{
@@ -52,7 +55,6 @@ public class LobbyManager : MonoBehaviour
             Message lobbyMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.LobbyIsReady);
             lobbyMessage.AddString(lobbyKey);
             NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyMessage, lobbyKey);
-            StartGame();
         }
         else if (usersInThisLobby.Count > maxCountOfUser)
         {
@@ -73,13 +75,12 @@ public class LobbyManager : MonoBehaviour
         NetworkManager.Instance.SendMessageToAllUsersInLobby(message, lobbyKey);
 		if (numberOfSelectedHero == usersInThisLobby.Count)
 		{
-            Debug.Log("All Hero Has been Selected ");
             Message lobbyStartGameMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.AllHeroSelected);
 			foreach (var item in usersInThisLobby)
 			{
                 item.Value.Init();
 			}
-
+			StartGame();
             NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyStartGameMessage, lobbyKey);
 		}
 	}
@@ -92,6 +93,10 @@ public class LobbyManager : MonoBehaviour
 		{
             Debug.Log("Disconnected Client is on this Lobby ");
             usersInThisLobby.Remove(e.Client.Id);
+			if (usersInThisLobby.Count == 0)
+			{
+				Destroy(gameObject);
+			}
 		}
 	}
 	#endregion
@@ -99,41 +104,50 @@ public class LobbyManager : MonoBehaviour
 
 	private void StartGame()
 	{
-        Debug.LogError("Game Started");
+		foreach (var item in creepGenerators)
+			item.Init();
 	}
-    public void AddNewPlayer(ushort playerId, bool isTeam1)
+	#region public Method
+	public void AddNewPlayer(ushort playerId, bool isTeam1)
 	{
         CharacterControllerClass newUser = Instantiate(characterPrefab, isTeam1 ? team1Parent : team2Parent);
         newUser.characterId = playerId;
+		newUser.isTeam1 = isTeam1;
+		newUser.character.Warp(isTeam1 ? team1Data.teamPlayerSpawnPosition : team2Data.teamPlayerSpawnPosition);
         usersInThisLobby.Add(playerId, newUser);
 
 	}
 
-    #region MessageHandlers
-  //  public static void OnUsersSelectedHero(ushort fromClientId, Message message)
-  //  {
-		//if (Instance.usersInThisLobby.ContainsKey(fromClientId))
-		//{
-  //          string heroId = message.GetString();
-  //          string userId = message.GetString();
-  //          Debug.LogError($"Selected Hero {heroId}  by {userId}");
-  //          Instance.usersInThisLobby[fromClientId].OnSelectedHero(heroId, userId);
-  //          Instance.numberOfSelectedHero++;
-		//	if (Instance.numberOfSelectedHero == Instance.maxCountOfUser)
-		//	{
-  //              Message msg = Message.Create(MessageSendMode.Reliable, ServerToClientId.AllHeroSelected);
-  //              List<UsersHeroInLobby> allUsersHeroData = new List<UsersHeroInLobby>();
-				
-  //              foreach (var item in Instance.usersInThisLobby)
-  //                  allUsersHeroData.Add(new UsersHeroInLobby(item.Value.userId.ToString(), item.Value.selectedHeroId));
-
-  //              msg.AddString(JsonUtility.ToJson(new UsersHeroInLobbyList(allUsersHeroData)));
-  //              NetworkManager.Instance.SendMessageToAllUsersInLobby(msg, Instance.lobbyKey);
-		//	}
-		//}
-  //  }
+	public void UserInputManager(ushort playerId, Vector2 input)
+	{
+		if (usersInThisLobby.ContainsKey(playerId))
+		{
+			usersInThisLobby[playerId].PlayerInputController(input);
+		}
+	}
 	#endregion
 
 	#region Private Functions
+	int timer = 0;
+	private void FixedUpdate()
+	{
+		timer++;
+		if (timer > tick)
+		{
+			SendSyncMessage();
+			timer = 0;
+		}
+	}
+	private void SendSyncMessage()
+	{
+		Message syncMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.Sync);
+		syncMessage.AddInt(maxCountOfUser);
+		foreach (var item in usersInThisLobby)
+		{
+			syncMessage.AddVector3(item.Value.transform.position);
+			syncMessage.AddString(item.Value.userId);
+		}
+		NetworkManager.Instance.SendMessageToAllUsersInLobby(syncMessage, lobbyKey);
+	}
 	#endregion
 }
