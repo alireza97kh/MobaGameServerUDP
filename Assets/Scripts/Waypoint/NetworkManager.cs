@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NetworkManagerModels;
+using System;
 
 public class NetworkManager : SingletonBase<NetworkManager>
 {
@@ -104,6 +105,8 @@ public class NetworkManager : SingletonBase<NetworkManager>
     public static void OnPingMessageGet(ushort fromClientId, Message message)
     {
         Message pongMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.Pong);
+        int miliSecond = message.GetInt();
+        pongMessage.AddInt(miliSecond);
         Instance.SendMessageToCustomUser(pongMessage, fromClientId);
     }
     #endregion

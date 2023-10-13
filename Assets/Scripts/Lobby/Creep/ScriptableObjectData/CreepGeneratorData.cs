@@ -16,6 +16,12 @@ namespace Dobeil
         Team1 = 1,
         Team2 = 2
     }
+
+	public enum CreateCreepState
+	{
+        Instantiate = 0,
+        Restart = 1
+    }
 }
 [System.Serializable]
 [CreateAssetMenu(fileName = "CreepGeneratorData", menuName = "DobeilData/CreepGeneratorData")]

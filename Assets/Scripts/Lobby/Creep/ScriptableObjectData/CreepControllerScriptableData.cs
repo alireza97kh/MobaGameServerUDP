@@ -13,4 +13,5 @@ public class CreepControllerScriptableData : ScriptableObject
 	public float creeptDellay = 2;
 	public CreepActionScores score;
 	public float creepDetection = 7;
+	public int sendSyncMessageTick = 15;
 }

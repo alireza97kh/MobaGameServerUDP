@@ -104,8 +104,19 @@ public class LobbyManager : MonoBehaviour
 
 	private void StartGame()
 	{
+		Message creepGeneratorMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.CreateCreepGenerator);
+		creepGeneratorMessage.AddInt(creepGenerators.Count);
+		int generatorId = 0;
 		foreach (var item in creepGenerators)
-			item.Init();
+		{
+			creepGeneratorMessage.AddInt((int)item.generatorData.generatorTeam);
+			creepGeneratorMessage.AddInt((int)item.generatorData.generatorLine);
+			creepGeneratorMessage.AddVector3(item.transform.position);
+			creepGeneratorMessage.AddInt(generatorId);
+			item.Init(generatorId, lobbyKey);
+			generatorId++;
+		}
+		NetworkManager.Instance.SendMessageToAllUsersInLobby(creepGeneratorMessage, lobbyKey);
 	}
 	#region public Method
 	public void AddNewPlayer(ushort playerId, bool isTeam1)

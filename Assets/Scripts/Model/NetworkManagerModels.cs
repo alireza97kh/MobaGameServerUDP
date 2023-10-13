@@ -20,12 +20,15 @@ namespace NetworkManagerModels
         LobbyIsReady,
         HeroSelected,
         AllHeroSelected,
-		CreateHero,
+        CreateHero,
         Pong,
         CreateCreepGenerator,
+        CreateCreep,
+        SyncCreep,
         Sync
-
     }
+
+
     [Serializable]
     public class ListWithChangeEvent<T> : List<T>
     {

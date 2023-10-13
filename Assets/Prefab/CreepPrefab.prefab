@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 4088607720219647277}
   - component: {fileID: 8281278221921484788}
   - component: {fileID: 8070823046965281520}
-  m_Layer: 0
+  - component: {fileID: 8512128335788274982}
+  m_Layer: 9
   m_Name: CreepPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,3 +88,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isAlive: 1
   hpCount: 100
+--- !u!136 &8512128335788274982
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4088607720219647266}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}

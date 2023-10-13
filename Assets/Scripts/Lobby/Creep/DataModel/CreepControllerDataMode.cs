@@ -3,9 +3,9 @@ namespace Dobeil
     public enum CreepState
     {
         //Idle,
-        Moving,
-        Attacking,
-        Dead
+        Moving = 0,
+        Attacking = 1,
+        Dead = 2
     }
 
     public enum CreepStateAction

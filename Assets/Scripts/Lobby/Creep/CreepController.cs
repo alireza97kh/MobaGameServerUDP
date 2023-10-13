@@ -1,4 +1,6 @@
 using Dobeil;
+using NetworkManagerModels;
+using Riptide;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
@@ -19,8 +21,11 @@ public class CreepController : MonoBehaviour
     private TargetData target = null;
     private string enemyTag = "";
 
-
-    public void Init()
+    private int tick = 1;
+    private float timer = 0;
+    private float lastAttackTime = 0;
+    private string lobbyKey = "";
+    public void Init(string _lobbyKey = "")
 	{
         isAlive = true;
         CurrentState = CreepState.Moving;
@@ -32,6 +37,8 @@ public class CreepController : MonoBehaviour
         CurrentWaypoint = firstWaypoint;
 		if (enemyTag == "")
             SetEnemyTag();
+		if (_lobbyKey != "")
+            lobbyKey = _lobbyKey;
 
     }
     private void SetEnemyTag()
@@ -60,14 +67,16 @@ public class CreepController : MonoBehaviour
             return;
         }
         if (CurrentWaypoint != null && Vector3.Distance(transform.position, CurrentWaypoint.GetPosition()) <= agent.stoppingDistance && CurrentWaypoint.nextWaypoint != null)
-		{
             CurrentWaypoint = CurrentWaypoint.nextWaypoint;
-		}
 
 		CurrentState = GetCurrentState();
 		ExecuteAction(CurrentState);
 		FaceTarget();
-	}
+        timer += Time.deltaTime;
+        tick++;
+        if (tick % creepData.sendSyncMessageTick == 0)
+            SendSyncMessage();
+    }
     #endregion
     #region Private Function
     private CreepState GetCurrentState()
@@ -94,8 +103,6 @@ public class CreepController : MonoBehaviour
             }
 
         }
-
-
         switch (bestAction)
         {
             case CreepStateAction.DoNothing:
@@ -131,13 +138,13 @@ public class CreepController : MonoBehaviour
             case CreepStateAction.DoNothing:
                 return true;
             case CreepStateAction.KeepMoving:
-                return allEnemyNear.Count == 0;
+                return allEnemyNear.Count == 0 && CurrentWaypoint != null;
             case CreepStateAction.MoveToEnemyCreep:
-                return CheckToMoveToEnemyByTag(allEnemyNear, "Creept");
+                return CheckToMoveToEnemyByTag(allEnemyNear, "Creep", LayerMask.NameToLayer("Creep"));
             case CreepStateAction.MoveToEnemyHero:
-                return CheckToMoveToEnemyByTag(allEnemyNear, "Player");
+                return CheckToMoveToEnemyByTag(allEnemyNear, "Player", LayerMask.NameToLayer("Player"));
             case CreepStateAction.MoveToEnemyTower:
-                return CheckToMoveToEnemyByTag(allEnemyNear, "Tower");
+                return CheckToMoveToEnemyByTag(allEnemyNear, "Tower", LayerMask.NameToLayer("Tower"));
             case CreepStateAction.AttackToEnemyCreep:
                 return (CheckUnitIsNotNullAndAlive(target) && target.transform.tag.Contains("Creept"));
             case CreepStateAction.AttackToEnemyHero:
@@ -158,8 +165,21 @@ public class CreepController : MonoBehaviour
                 agent.SetDestination(CurrentWaypoint.GetPosition());
 				break;
 			case CreepState.Attacking:
-				if (CheckUnitIsNotNullAndAlive(target) && agent.isOnNavMesh)
-					agent.SetDestination(target.transform.position);
+                if (CheckUnitIsNotNullAndAlive(target) && agent.isOnNavMesh)
+                {
+                    agent.SetDestination(target.transform.position);
+                    float distanceToTarget = Vector3.Distance(transform.position, target.transform.position);
+
+                    if (distanceToTarget < creepData.creeptAttackPlane)
+                    {
+                        if (timer - lastAttackTime > creepData.creeptDellay) 
+						{
+                            lastAttackTime = timer;
+                            Debug.LogError("Attack To Target ");
+						}
+                    }
+                }
+                
 				break;
 			case CreepState.Dead:
 				break;
@@ -167,7 +187,6 @@ public class CreepController : MonoBehaviour
 				break;
 		}
 	}
-
 
 
     private void FaceTarget()
@@ -186,7 +205,7 @@ public class CreepController : MonoBehaviour
         List<TargetData> enemyUnitsInRange = new List<TargetData>();
         foreach (Collider item in col)
         {
-            if (item.tag.Contains(enemyTag))
+            if (item.tag != tag && item.tag.Contains(enemyTag))
             {
                 Health TempHealth = item.GetComponent<Health>();
                 if (TempHealth != null && TempHealth.isAlive)
@@ -195,7 +214,7 @@ public class CreepController : MonoBehaviour
         }
         return enemyUnitsInRange;
     }
-    private bool CheckToMoveToEnemyByTag(List<TargetData> allEnemyNear, string _tag)
+    private bool CheckToMoveToEnemyByTag(List<TargetData> allEnemyNear, string _tag, LayerMask layerMask)
     {
         if (allEnemyNear.Count > 0)
         {
@@ -228,5 +247,31 @@ public class CreepController : MonoBehaviour
     {
         return unit != null && unit.transform != null && unit.health != null && unit.health.isAlive;
     }
-    #endregion
+	#endregion
+
+
+	#region Sync
+
+    private void SendSyncMessage()
+	{
+        Message syncCreepMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.SyncCreep);
+        syncCreepMessage.Add(creepId);
+        syncCreepMessage.AddVector3(transform.position);
+        syncCreepMessage.AddInt((int)CurrentState);
+		switch (CurrentState)
+		{
+			case CreepState.Moving:
+                syncCreepMessage.AddVector3(CurrentWaypoint.GetPosition());
+				break;
+			case CreepState.Attacking:
+                syncCreepMessage.AddVector3(target.transform.position);
+				break;
+			case CreepState.Dead:
+				break;
+			default:
+				break;
+		}
+        NetworkManager.Instance.SendMessageToAllUsersInLobby(syncCreepMessage, lobbyKey);
+	}
+	#endregion
 }
