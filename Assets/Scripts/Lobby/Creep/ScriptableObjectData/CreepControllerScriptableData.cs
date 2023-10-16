@@ -8,10 +8,11 @@ public class CreepControllerScriptableData : ScriptableObject
 {
 	public float creeptAttackPlane = 3;
 	public float creeptAround = 10;
-	public NumberRange creeptsAttackDamageRange;
+	public int creepAttackDamage;
 	public float rotationSpeed = 1000;
 	public float creeptDellay = 2;
 	public CreepActionScores score;
 	public float creepDetection = 7;
 	public int sendSyncMessageTick = 15;
+	public DamageType creepDamageType;
 }

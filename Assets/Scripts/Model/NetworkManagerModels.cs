@@ -25,6 +25,7 @@ namespace NetworkManagerModels
         CreateCreepGenerator,
         CreateCreep,
         SyncCreep,
+        SyncHealth,
         Sync
     }
 

@@ -25,7 +25,7 @@ public class CreepController : MonoBehaviour
     private float timer = 0;
     private float lastAttackTime = 0;
     private string lobbyKey = "";
-    public void Init(string _lobbyKey = "")
+    public void Init(string _lobbyKey = "", int _creepId = -1)
 	{
         isAlive = true;
         CurrentState = CreepState.Moving;
@@ -39,6 +39,9 @@ public class CreepController : MonoBehaviour
             SetEnemyTag();
 		if (_lobbyKey != "")
             lobbyKey = _lobbyKey;
+        if (_creepId != -1)
+            creepId = _creepId;
+        health.Init(lobbyKey, creepId);
 
     }
     private void SetEnemyTag()
@@ -175,7 +178,7 @@ public class CreepController : MonoBehaviour
                         if (timer - lastAttackTime > creepData.creeptDellay) 
 						{
                             lastAttackTime = timer;
-                            Debug.LogError("Attack To Target ");
+                            target.health.DecreaseHp(creepData.creepAttackDamage, creepData.creepDamageType, creepId);
 						}
                     }
                 }
@@ -187,8 +190,6 @@ public class CreepController : MonoBehaviour
 				break;
 		}
 	}
-
-
     private void FaceTarget()
     {
         if (CheckUnitIsNotNullAndAlive(target))

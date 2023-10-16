@@ -50,8 +50,7 @@ public class CreepGenerator : MonoBehaviour
 					CreepController newCreep = Instantiate(generatorData.creeptsPrefab, transform.position, Quaternion.identity, transform);
 					newCreep.tag = generatorData.creepTag;
 					newCreep.firstWaypoint = firstWaypoint;
-					newCreep.creepId = CreepManager.Instance.GetNewCreepId();
-					newCreep.Init(lobbyKey);
+					newCreep.Init(lobbyKey, CreepManager.Instance.GetNewCreepId());
 					createNewCreepMessage.AddInt((int)CreateCreepState.Instantiate);
 					createNewCreepMessage.AddInt(newCreep.creepId);
 					allOfCreatedCreep.Add(newCreep);
