@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b30417b6e48b14f4e81ea5cd75073b5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  port: 1234
+  port: 4321
   maxCountOfUsers: 100
   currentLobbyTofill: {fileID: 0}
   lobbyManagerPrefab: {fileID: 5318642020389647985, guid: 682731552532c2848885d12ce91bcaa3, type: 3}

@@ -41,7 +41,7 @@ public class CreepGenerator : MonoBehaviour
 						allOfCreatedCreep[i].firstWaypoint = firstWaypoint;
 						allOfCreatedCreep[i].Init();
 						createNewCreepMessage.AddInt((int)CreateCreepState.Restart);
-						createNewCreepMessage.AddInt(allOfCreatedCreep[i].creepId);
+						createNewCreepMessage.AddString(allOfCreatedCreep[i].creepId);
 						Count--;
 					}
 				}
@@ -52,7 +52,7 @@ public class CreepGenerator : MonoBehaviour
 					newCreep.firstWaypoint = firstWaypoint;
 					newCreep.Init(lobbyKey, CreepManager.Instance.GetNewCreepId());
 					createNewCreepMessage.AddInt((int)CreateCreepState.Instantiate);
-					createNewCreepMessage.AddInt(newCreep.creepId);
+					createNewCreepMessage.AddString(newCreep.creepId);
 					allOfCreatedCreep.Add(newCreep);
 				}
 				NetworkManager.Instance.SendMessageToAllUsersInLobby(createNewCreepMessage, lobbyKey);

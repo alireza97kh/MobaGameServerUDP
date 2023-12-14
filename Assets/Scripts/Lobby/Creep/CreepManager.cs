@@ -7,7 +7,7 @@ public class CreepManager : SingletonBase<CreepManager>
     private int creepId = 0;
     private object creepIdLock = new object();
 
-    public int GetNewCreepId()
+    public string GetNewCreepId()
     {
         int newId;
         lock (creepIdLock)
@@ -15,7 +15,7 @@ public class CreepManager : SingletonBase<CreepManager>
             newId = creepId;
             creepId++;
         }
-        return newId;
+        return "creep" + newId;
     }
 
 }

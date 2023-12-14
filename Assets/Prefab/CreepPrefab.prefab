@@ -44,7 +44,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 4
   m_Acceleration: 10
   avoidancePriority: 50
   m_AngularSpeed: 250
@@ -86,8 +86,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e220ab45cb996e8499f2d2e183f0afe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
+  lobbyKey: 
   isAlive: 1
-  hpCount: 100
+  maxHp: 1000
+  haveProtectionSheild: 0
+  maxProtectionSheildCount: -1
+  increaseHpPerSec: -1
+  armor: 0
+  magicResistance: 0
 --- !u!136 &8512128335788274982
 CapsuleCollider:
   m_ObjectHideFlags: 0

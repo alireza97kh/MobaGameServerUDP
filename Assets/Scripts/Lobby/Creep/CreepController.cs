@@ -15,7 +15,7 @@ public class CreepController : MonoBehaviour
     [FoldoutGroup("Movement Info")] [SerializeField] private NavMeshAgent agent;
     [FoldoutGroup("Basic Data")] [SerializeField] private CreepControllerScriptableData creepData;
     public bool isAlive = true;
-    [HideInInspector] public int creepId = -1;
+    [HideInInspector] public string creepId = "";
     private CreepState CurrentState;
     private Health health;
     private TargetData target = null;
@@ -25,7 +25,7 @@ public class CreepController : MonoBehaviour
     private float timer = 0;
     private float lastAttackTime = 0;
     private string lobbyKey = "";
-    public void Init(string _lobbyKey = "", int _creepId = -1)
+    public void Init(string _lobbyKey = "", string _creepId = "")
 	{
         isAlive = true;
         CurrentState = CreepState.Moving;
@@ -39,9 +39,10 @@ public class CreepController : MonoBehaviour
             SetEnemyTag();
 		if (_lobbyKey != "")
             lobbyKey = _lobbyKey;
-        if (_creepId != -1)
+        if (_creepId != "")
             creepId = _creepId;
         health.Init(lobbyKey, creepId);
+        gameObject.SetActive(true);
 
     }
     private void SetEnemyTag()
@@ -57,7 +58,7 @@ public class CreepController : MonoBehaviour
 		if (health == null)
             return;
         //TODO Creep Dead Check please
-        if (!health.isAlive || health.hpCount <= 0)
+        if (!health.isAlive || health.HpCount <= 0)
         {
             if (isAlive)
             {
@@ -66,6 +67,7 @@ public class CreepController : MonoBehaviour
                 //TODO Add Gold to killer 
                 //AddGoldToKillers();
                 CurrentState = CreepState.Dead;
+                gameObject.SetActive(false);
             }
             return;
         }
