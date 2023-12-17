@@ -1,4 +1,3 @@
-using Riptide;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,16 +6,16 @@ using NetworkManagerModels;
 
 public class CharacterControllerClass : MonoBehaviour
 {
-	public ushort pId;
+	public int pId;
 	public LobbyManager manager;
 	public string selectedHeroId = "";
 	public string userId = "";
-    public ushort characterId;
+    public int characterId;
 	public bool isTeam1 = false;
     public NavMeshAgent character;
 	public int gold = 0;
 	public int xp = 0;
-	public void OnSelectedHero(string heroId, string _userId, ushort _pId, LobbyManager _manager)
+	public void OnSelectedHero(string heroId, string _userId, int _pId, LobbyManager _manager)
 	{
 		selectedHeroId = heroId;
 		userId = _userId;
@@ -26,13 +25,14 @@ public class CharacterControllerClass : MonoBehaviour
 
 	public void Init()
 	{
-		Message initMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.CreateHero);
-		initMessage.AddVector3(transform.position);
-		initMessage.AddBool(isTeam1);
-		initMessage.AddUShort(characterId);
-		initMessage.AddString(selectedHeroId);
-		initMessage.AddString(userId);
-		NetworkManager.Instance.SendMessageToAllUsersInLobby(initMessage, manager.lobbyKey);
+		List<string> list = new List<string>();
+		list.Add($"{(int)ServerToClientId.CreateHero}");
+        list.Add(transform.position.ToString());
+		list.Add(isTeam1.ToString());
+		list.Add(characterId.ToString());
+		list.Add(selectedHeroId.ToString());
+		list.Add(userId.ToString());
+		OnlineServer.Instance.BroadCastMessageInLobby(Utility.EnCodeMessage(list), manager.lobbyKey, Dobeil.SendMessageProtocol.TCP);
 	}
 
 	public void PlayerInputController(Vector2 input)

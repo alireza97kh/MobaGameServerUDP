@@ -1,6 +1,5 @@
 using Dobeil;
 using NetworkManagerModels;
-using Riptide;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,34 +27,41 @@ public class CreepGenerator : MonoBehaviour
 			yield return new WaitForSeconds(generatorData.startDellay);
 			while (true)
 			{
-				Message createNewCreepMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.CreateCreep);
-				createNewCreepMessage.AddInt(generatorId);
-				int Count = generatorData.countOfCreepts;
-				createNewCreepMessage.AddInt(Count);
-				createNewCreepMessage.AddVector3(firstWaypoint.GetPosition());
-				for (int i = 1; i < allOfCreatedCreep.Count && Count > 0; i++)
+				int count = generatorData.countOfCreepts;
+				List<string> createNewCreepMessage = new List<string>()
 				{
-					if (!allOfCreatedCreep[i].isAlive && Count > 0)
+					((int)ServerToClientId.CreateCreep).ToString(),
+					generatorId.ToString(),
+                    count.ToString(),
+                    firstWaypoint.GetPosition().ToString(),
+                };
+
+                for (int i = 1; i < allOfCreatedCreep.Count && generatorData.countOfCreepts > 0; i++)
+				{
+					if (!allOfCreatedCreep[i].isAlive && count > 0)
 					{
 						allOfCreatedCreep[i].transform.position = transform.position;
 						allOfCreatedCreep[i].firstWaypoint = firstWaypoint;
 						allOfCreatedCreep[i].Init();
-						createNewCreepMessage.AddInt((int)CreateCreepState.Restart);
-						createNewCreepMessage.AddString(allOfCreatedCreep[i].creepId);
-						Count--;
+						createNewCreepMessage.Add(((int)CreateCreepState.Restart).ToString());
+						createNewCreepMessage.Add(allOfCreatedCreep[i].creepId.ToString());
+						count--;
 					}
 				}
-				for (int i = 0; i < Count; i++)
+				for (int i = 0; i < count; i++)
 				{
 					CreepController newCreep = Instantiate(generatorData.creeptsPrefab, transform.position, Quaternion.identity, transform);
 					newCreep.tag = generatorData.creepTag;
 					newCreep.firstWaypoint = firstWaypoint;
 					newCreep.Init(lobbyKey, CreepManager.Instance.GetNewCreepId());
-					createNewCreepMessage.AddInt((int)CreateCreepState.Instantiate);
-					createNewCreepMessage.AddString(newCreep.creepId);
+					createNewCreepMessage.Add(((int)CreateCreepState.Instantiate).ToString());
+					createNewCreepMessage.Add(newCreep.creepId);
 					allOfCreatedCreep.Add(newCreep);
 				}
-				NetworkManager.Instance.SendMessageToAllUsersInLobby(createNewCreepMessage, lobbyKey);
+				OnlineServer.Instance.BroadCastMessageInLobby(
+					Utility.EnCodeMessage(createNewCreepMessage), 
+					lobbyKey,
+					SendMessageProtocol.TCP);
 				yield return new WaitForSeconds(generatorData.dellay);
 			}
 		}

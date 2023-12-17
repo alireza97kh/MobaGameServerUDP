@@ -1,6 +1,5 @@
 using Dobeil;
 using NetworkManagerModels;
-using Riptide;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
@@ -257,24 +256,25 @@ public class CreepController : MonoBehaviour
 
     private void SendSyncMessage()
 	{
-        Message syncCreepMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.SyncCreep);
-        syncCreepMessage.Add(creepId);
-        syncCreepMessage.AddVector3(transform.position);
-        syncCreepMessage.AddInt((int)CurrentState);
+        List<string> syncMessage = new List<string>();
+        syncMessage.Add(((int)ServerToClientId.SyncCreep).ToString());
+        syncMessage.Add(creepId.ToString());
+        syncMessage.Add(transform.position.ToString());
+        syncMessage.Add(((int)CurrentState).ToString());
 		switch (CurrentState)
 		{
 			case CreepState.Moving:
-                syncCreepMessage.AddVector3(CurrentWaypoint.GetPosition());
+                syncMessage.Add(CurrentWaypoint.GetPosition().ToString());
 				break;
 			case CreepState.Attacking:
-                syncCreepMessage.AddVector3(target.transform.position);
+                syncMessage.Add(target.transform.position.ToString());
 				break;
 			case CreepState.Dead:
 				break;
 			default:
 				break;
 		}
-        NetworkManager.Instance.SendMessageToAllUsersInLobby(syncCreepMessage, lobbyKey);
+        OnlineServer.Instance.BroadCastMessageInLobby(Utility.EnCodeMessage(syncMessage), lobbyKey, SendMessageProtocol.UDP);
 	}
 	#endregion
 }

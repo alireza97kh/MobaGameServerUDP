@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace NetworkManagerModels
 {
-    public enum ClientToServerId : ushort
+    public enum ClientToServerId : int
     {
         Validation,
         SelectedHero,
@@ -14,7 +14,7 @@ namespace NetworkManagerModels
 
 
 
-    public enum ServerToClientId : ushort
+    public enum ServerToClientId : int
     {
         validation,
         LobbyIsReady,
@@ -104,9 +104,9 @@ namespace NetworkManagerModels
     //   public class ConnectedUserInQueue
     //{
     //       public float connectedTime;
-    //       public ushort userId;
+    //       public int userId;
     //       public ConnectedUserInQueue() { }
-    //       public ConnectedUserInQueue(float time, ushort id)
+    //       public ConnectedUserInQueue(float time, int id)
     //	{
     //           connectedTime = time;
     //           userId = id;

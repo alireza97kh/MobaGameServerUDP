@@ -1,6 +1,5 @@
 using Dobeil;
 using NetworkManagerModels;
-using Riptide;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -102,10 +101,16 @@ public class Health : MonoBehaviour
 	}
     private void SendSyncHealthMessage()
 	{
-        Message healthMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.SyncHealth);
-        healthMessage.AddString(id);
-        healthMessage.AddInt(HpCount);
-        healthMessage.AddInt(maxHp);
-        NetworkManager.Instance.SendMessageToAllUsersInLobby(healthMessage, lobbyKey);
+        List<string> healthMessage = new List<string>()
+        {
+            ((int)ServerToClientId.SyncHealth).ToString(),
+            id,
+            HpCount.ToString(),
+            maxHp.ToString()
+        };
+        OnlineServer.Instance.BroadCastMessageInLobby(
+            Utility.EnCodeMessage(healthMessage),
+            lobbyKey,
+            SendMessageProtocol.UDP);
 	}
 }

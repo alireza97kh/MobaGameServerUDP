@@ -133,6 +133,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1301014215}
   - component: {fileID: 1301014216}
+  - component: {fileID: 1301014218}
+  - component: {fileID: 1301014217}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -150,6 +152,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -163,13 +166,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 1301014214}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b30417b6e48b14f4e81ea5cd75073b5c, type: 3}
+  m_Script: {fileID: 11500000, guid: 88b5f63432087794487de95252254efd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  port: 4321
-  maxCountOfUsers: 100
+  TCPServer: {fileID: 1301014218}
+  UDPServer: {fileID: 1301014217}
   currentLobbyTofill: {fileID: 0}
   lobbyManagerPrefab: {fileID: 5318642020389647985, guid: 682731552532c2848885d12ce91bcaa3, type: 3}
+--- !u!114 &1301014217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1301014214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 743fe8a79796ff9448c3746343421b13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1301014218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1301014214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea7dba558917d594db5418fde191e739, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1306226873
 GameObject:
   m_ObjectHideFlags: 0
@@ -249,6 +276,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 77.20713, y: 5.700116, z: 58.21454}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -279,6 +307,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
