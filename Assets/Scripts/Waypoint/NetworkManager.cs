@@ -20,6 +20,7 @@ public class NetworkManager : SingletonBase<NetworkManager>
 	// Start is called before the first frame update
 	void Start()
     {
+        Application.runInBackground = true;
 		Application.targetFrameRate = 60;
 		lobbyHash = new Dictionary<string, LobbyManager>();
         RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, true);
@@ -28,7 +29,7 @@ public class NetworkManager : SingletonBase<NetworkManager>
         Server.ClientConnected += NewPlayerConnected;
         Server.ClientDisconnected += PlayerLeft;
     }
-    void Update()
+    void FixedUpdate()
     {
         Server.Update();
     }

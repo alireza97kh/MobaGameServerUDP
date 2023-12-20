@@ -264,10 +264,9 @@ public class CreepController : MonoBehaviour
 		switch (CurrentState)
 		{
 			case CreepState.Moving:
-                syncCreepMessage.AddVector3(CurrentWaypoint.GetPosition());
 				break;
 			case CreepState.Attacking:
-                syncCreepMessage.AddVector3(target.transform.position);
+                syncCreepMessage.AddString(target.health.id);
 				break;
 			case CreepState.Dead:
 				break;
