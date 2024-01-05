@@ -1,0 +1,24 @@
+Creppcreep0 Send Data 1323 in 1900 and 63 Messages
+Creppcreep1 Send Data 1638 in 2362 and 78 Messages
+Crepp2 Send Data 1078 in 2338 and 77 Messages
+Crepp4 Send Data 1358 in 2924 and 97 Messages
+Crepp8 Send Data 1218 in 2616 and 87 Messages
+
+
+Creppcreep10 Send Data 1386 in 1900 and 63 Messages
+Creppcreep14 Send Data 1584 in 2177 and 72 Messages
+Creppcreep16 Send Data 1672 in 2301 and 76 Messages
+
+Creppcreep13 Send Data 2046 in 2792 and 93 Messages
+Crepp11 Send Data 994 in 2152 and 71 Messages
+
+Crepp12 Send Data 1092 in 2369 and 78 Messages
+Crepp18 Send Data 1204 in 2585 and 86 Messages
+Crepp14 Send Data 1302 in 2801 and 93 Messages
+Crepp10 Send Data 1344 in 2893 and 96 Messages
+Crepp9 Send Data 1386 in 2986 and 99 Messages
+Crepp17 Send Data 1400 in 3016 and 100 Messages
+Crepp10 Send Data 910 in 1964 and 65 Messages
+Crepp11 Send Data 924 in 1992 and 66 Messages
+Crepp10 Send Data 1064 in 2299 and 76 Messages
+Crepp18 Send Data 1120 in 2423 and 80 Messages

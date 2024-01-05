@@ -11,9 +11,9 @@ public class CreepGenerator : MonoBehaviour
 	[SerializeField] private Waypoint firstWaypoint;
 
 	private List<CreepController> allOfCreatedCreep; // cash Created Creep
-	private int generatorId = -1;
+	private ushort generatorId;
 	private string lobbyKey = "";
-	public void Init(int _id, string _lobbyKey)
+	public void Init(ushort _id, string _lobbyKey)
 	{
 		allOfCreatedCreep = new List<CreepController>();
 		generatorId = _id;
@@ -29,10 +29,10 @@ public class CreepGenerator : MonoBehaviour
 			while (true)
 			{
 				Message createNewCreepMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.CreateCreep);
-				createNewCreepMessage.AddInt(generatorId);
-				int Count = generatorData.countOfCreepts;
-				createNewCreepMessage.AddInt(Count);
-				createNewCreepMessage.AddVector3(firstWaypoint.GetPosition());
+				createNewCreepMessage.AddUShort(generatorId);
+				ushort Count = generatorData.countOfCreepts;
+				createNewCreepMessage.AddUShort(Count);
+				createNewCreepMessage = HelperMethods.Instance.AddVector3(firstWaypoint.GetPosition(), createNewCreepMessage);
 				for (int i = 1; i < allOfCreatedCreep.Count && Count > 0; i++)
 				{
 					if (!allOfCreatedCreep[i].isAlive && Count > 0)
@@ -40,8 +40,8 @@ public class CreepGenerator : MonoBehaviour
 						allOfCreatedCreep[i].transform.position = transform.position;
 						allOfCreatedCreep[i].firstWaypoint = firstWaypoint;
 						allOfCreatedCreep[i].Init();
-						createNewCreepMessage.AddInt((int)CreateCreepState.Restart);
-						createNewCreepMessage.AddString(allOfCreatedCreep[i].creepId);
+						createNewCreepMessage.AddUShort((ushort)CreateCreepState.Restart);
+						createNewCreepMessage.AddUShort(allOfCreatedCreep[i].creepId);
 						Count--;
 					}
 				}
@@ -51,8 +51,8 @@ public class CreepGenerator : MonoBehaviour
 					newCreep.tag = generatorData.creepTag;
 					newCreep.firstWaypoint = firstWaypoint;
 					newCreep.Init(lobbyKey, CreepManager.Instance.GetNewCreepId());
-					createNewCreepMessage.AddInt((int)CreateCreepState.Instantiate);
-					createNewCreepMessage.AddString(newCreep.creepId);
+					createNewCreepMessage.AddUShort((ushort)CreateCreepState.Instantiate);
+					createNewCreepMessage.AddUShort(newCreep.creepId);
 					allOfCreatedCreep.Add(newCreep);
 				}
 				NetworkManager.Instance.SendMessageToAllUsersInLobby(createNewCreepMessage, lobbyKey);

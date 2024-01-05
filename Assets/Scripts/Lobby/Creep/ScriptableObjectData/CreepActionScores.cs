@@ -7,6 +7,7 @@ public class CreepActionScores : ScriptableObject
 {
     public CreepScore Idle;
     public CreepScore Moving;
+    public CreepScore MoveToTarget;
     public CreepScore Attacking;
     public CreepScore Dead;
 
@@ -14,6 +15,7 @@ public class CreepActionScores : ScriptableObject
     {
         Idle = new CreepScore();
         Moving = new CreepScore();
+		MoveToTarget = new CreepScore();
         Attacking = new CreepScore();
         Dead = new CreepScore();
     }

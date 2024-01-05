@@ -1,0 +1,10 @@
+count of Message 537 and count of Bytes 12570 
+count of Message 502 and count of Bytes 11763 
+count of Message 992 and count of Bytes 19344 
+count of Message 337 and count of Bytes 8153 
+count of Message 1225 and count of Bytes 26705 
+count of Message 2176 and count of Bytes 47842 
+count of Message 5483 and count of Bytes 104401 
+count of Message 1053 and count of Bytes 22685 
+count of Message 3590 and count of Bytes 71223 
+count of Message 4391 and count of Bytes 85617 

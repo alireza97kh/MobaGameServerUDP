@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class CreepManager : SingletonBase<CreepManager>
 {
-    private int creepId = 0;
+    private ushort creepId = 1;
     private object creepIdLock = new object();
 
-    public string GetNewCreepId()
+    public ushort GetNewCreepId()
     {
-        int newId;
+        ushort newId;
         lock (creepIdLock)
         {
             newId = creepId;
             creepId++;
         }
-        return "creep" + newId;
+        return newId;
     }
 
 }

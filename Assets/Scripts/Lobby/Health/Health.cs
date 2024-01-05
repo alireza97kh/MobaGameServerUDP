@@ -8,7 +8,8 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public string id;
+    public ushort id;
+    public CurrentUnitHealthType unitType;
     public string lobbyKey;
     public bool isAlive = true;
     public int HpCount { 
@@ -30,8 +31,9 @@ public class Health : MonoBehaviour
     public int magicResistance = 0;
 
     private Dictionary<string, int> attackers;
-    public void Init(string _lobbyKey, string _id)
+    public void Init(string _lobbyKey, ushort _id, CurrentUnitHealthType _unitType)
 	{
+        unitType = _unitType;
         lobbyKey = _lobbyKey;
         id = _id;
         isAlive = true;
@@ -103,7 +105,8 @@ public class Health : MonoBehaviour
     private void SendSyncHealthMessage()
 	{
         Message healthMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.SyncHealth);
-        healthMessage.AddString(id);
+        healthMessage.AddUShort(id);
+        healthMessage.AddUShort((ushort)unitType);
         healthMessage.AddInt(HpCount);
         healthMessage.AddInt(maxHp);
         NetworkManager.Instance.SendMessageToAllUsersInLobby(healthMessage, lobbyKey);

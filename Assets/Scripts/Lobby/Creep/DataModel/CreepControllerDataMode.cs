@@ -1,11 +1,12 @@
 namespace Dobeil
 {
-    public enum CreepState
+    public enum CreepState : ushort
     {
-        //Idle,
-        Moving = 0,
-        Attacking = 1,
-        Dead = 2
+        Idle = 0,
+        Moving = 1,
+        MoveToTarget = 2,
+        Attacking = 3,
+        Dead = 4
     }
 
     public enum CreepStateAction

@@ -30,6 +30,15 @@ MonoBehaviour:
     AttackToEnemyCreep: 5
     AttackToEnemyHero: 7
     AttackToEnemyTower: 6
+  MoveToTarget:
+    DoNothing: 0
+    KeepMoving: 1
+    MoveToEnemyCreep: 2
+    MoveToEnemyHero: 4
+    MoveToEnemyTower: 3
+    AttackToEnemyCreep: 5
+    AttackToEnemyHero: 6
+    AttackToEnemyTower: 7
   Attacking:
     DoNothing: 0
     KeepMoving: 1

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NetworkManagerModels;
 using System;
+using System.IO;
 
 public class NetworkManager : SingletonBase<NetworkManager>
 {
@@ -36,9 +37,12 @@ public class NetworkManager : SingletonBase<NetworkManager>
     private void NewPlayerConnected(object sender, ServerConnectedEventArgs e)
 	{
         Debug.LogError($"Connected Cliend Id IS : {e.Client.Id}");
+        StartCoroutine(MessageCounter());
     }
     private void PlayerLeft(object sender, ServerDisconnectedEventArgs e)
     {
+        //File.AppendAllText(Application.dataPath + "network.txt",
+            //$"count of Message {countOfMessage} and count of Bytes {countOfBytes} \n");
     }
 	int count = 0;
     public string keyGenerator()
@@ -46,8 +50,12 @@ public class NetworkManager : SingletonBase<NetworkManager>
         return $"lobby{count++}";
 	}
     #region Send Messages Method
+    private int countOfMessage = 0;
+    private int countOfBytes = 0;
     public void SendMessageToCustomUser(Message message, ushort customUserId)
     {
+        countOfMessage++;
+        countOfBytes += message.BytesInUse;
         Server.Send(message, customUserId);
     }
 
@@ -62,7 +70,19 @@ public class NetworkManager : SingletonBase<NetworkManager>
 	}
     #endregion
 
+    IEnumerator MessageCounter()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+            if (countOfMessage == 0 && countOfBytes == 0)
+                break;
+            Debug.Log(countOfMessage + "    " + countOfBytes);
+            countOfMessage = 0;
+            countOfBytes = 0;
 
+		}
+    }
     #region MessageHandler
     [MessageHandler((ushort)ClientToServerId.Validation)]
     public static void ValidateConnectedUser(ushort fromClientId, Message message)

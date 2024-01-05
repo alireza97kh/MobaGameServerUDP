@@ -10,10 +10,11 @@ using Dobeil;
 public class LobbyManager : MonoBehaviour
 {
     public static LobbyManager Instance = null;
-	public int tick = 10;
+	
     public string lobbyKey;
     public bool isFull = false;
-    public int maxCountOfUser = 1;
+	public bool gameStarted = false;
+    public ushort maxCountOfUser = 1;
     public Transform team1Parent;
     public Transform team2Parent;
     public CharacterControllerClass characterPrefab;
@@ -104,15 +105,16 @@ public class LobbyManager : MonoBehaviour
 
 	private void StartGame()
 	{
+		gameStarted = true;
 		Message creepGeneratorMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.CreateCreepGenerator);
-		creepGeneratorMessage.AddInt(creepGenerators.Count);
-		int generatorId = 0;
+		creepGeneratorMessage.AddUShort((ushort)creepGenerators.Count);
+		ushort generatorId = 0;
 		foreach (var item in creepGenerators)
 		{
-			creepGeneratorMessage.AddInt((int)item.generatorData.generatorTeam);
-			creepGeneratorMessage.AddInt((int)item.generatorData.generatorLine);
-			creepGeneratorMessage.AddVector3(item.transform.position);
-			creepGeneratorMessage.AddInt(generatorId);
+			creepGeneratorMessage.AddUShort((ushort)item.generatorData.generatorTeam);
+			creepGeneratorMessage.AddUShort((ushort)item.generatorData.generatorLine);
+			creepGeneratorMessage = HelperMethods.Instance.AddVector3(item.transform.position, creepGeneratorMessage);
+			creepGeneratorMessage.AddUShort(generatorId);
 			item.Init(generatorId, lobbyKey);
 			generatorId++;
 		}
@@ -135,30 +137,6 @@ public class LobbyManager : MonoBehaviour
 		{
 			usersInThisLobby[playerId].PlayerInputController(input);
 		}
-	}
-	#endregion
-
-	#region Private Functions
-	int timer = 0;
-	private void FixedUpdate()
-	{
-		timer++;
-		if (timer > tick)
-		{
-			SendSyncMessage();
-			timer = 0;
-		}
-	}
-	private void SendSyncMessage()
-	{
-		Message syncMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.Sync);
-		syncMessage.AddInt(maxCountOfUser);
-		foreach (var item in usersInThisLobby)
-		{
-			syncMessage.AddVector3(item.Value.transform.position);
-			syncMessage.AddString(item.Value.userId);
-		}
-		NetworkManager.Instance.SendMessageToAllUsersInLobby(syncMessage, lobbyKey);
 	}
 	#endregion
 }
