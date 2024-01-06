@@ -26,7 +26,8 @@ namespace NetworkManagerModels
         CreateCreep,
         SyncCreep,
         SyncHealth,
-        Sync
+        Sync,
+        CreateTower
     }
 
 

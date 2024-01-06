@@ -23,6 +23,7 @@ public class LobbyManager : MonoBehaviour
 	public PlayersTeamData team2Data;
 
 	public List<CreepGenerator> creepGenerators = new List<CreepGenerator>();
+	public TowerGenerator towerGenerator;
 
     int numberOfSelectedHero = 0;
     void Awake()
@@ -119,6 +120,7 @@ public class LobbyManager : MonoBehaviour
 			generatorId++;
 		}
 		NetworkManager.Instance.SendMessageToAllUsersInLobby(creepGeneratorMessage, lobbyKey);
+		towerGenerator.Init(lobbyKey);
 	}
 	#region public Method
 	public void AddNewPlayer(ushort playerId, bool isTeam1)
