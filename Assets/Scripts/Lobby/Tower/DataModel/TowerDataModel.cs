@@ -12,4 +12,25 @@ namespace Dobeil
 		Middle = 1,
 		Down = 2
 	}
+	public enum TowerState : ushort
+	{
+		Idle = 0,
+		Attacking = 1,
+		Dead = 2
+	}
+
+	public enum TowerStateAction
+	{
+		DoNothing,
+		AttackToEnemyCreep,
+		AttackToEnemyHero,
+	}
+
+	[System.Serializable]
+	public class TowerScore
+	{
+		public float DoNothing;
+		public float AttackToEnemyCreep;
+		public float AttackToEnemyHero;
+	}
 }

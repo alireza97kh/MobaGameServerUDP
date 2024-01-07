@@ -16,7 +16,7 @@ public class TowerGenerator : MonoBehaviour
         foreach (var item in towers)
         {
             towersId++;
-            item.Init(towersId);
+            item.Init(lobbyKey, towersId);
             towerInitMessage.AddUShort(towersId);
             towerInitMessage.AddUShort((ushort)item.team);
             towerInitMessage.AddUShort((ushort)item.line);

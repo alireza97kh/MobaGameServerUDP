@@ -1,6 +1,7 @@
 using Dobeil;
 using NetworkManagerModels;
 using Riptide;
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     public ushort id;
+    [EnumToggleButtons]
     public CurrentUnitHealthType unitType;
     public string lobbyKey;
     public bool isAlive = true;
