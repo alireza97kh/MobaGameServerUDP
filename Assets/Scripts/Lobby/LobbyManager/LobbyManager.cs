@@ -25,7 +25,10 @@ public class LobbyManager : MonoBehaviour
 	public List<CreepGenerator> creepGenerators = new List<CreepGenerator>();
 	public TowerGenerator towerGenerator;
 
-    int numberOfSelectedHero = 0;
+    private int numberOfSelectedHero = 0;
+    private int numberOfLoadedGameScene = 0;
+    private int numberOfCreatedAllHeros = 0;
+    private int numberOfCreatedAllTowers = 0;
     void Awake()
 	{
         Instance = this;
@@ -70,7 +73,6 @@ public class LobbyManager : MonoBehaviour
         string heroId = msg.GetString();
         usersInThisLobby[fromClientId].OnSelectedHero(heroId, userId, fromClientId, this);
         numberOfSelectedHero++;
-        Debug.Log($"{userId} Selected Hero {heroId}");
         Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.HeroSelected);
         message.AddString(heroId);
         message.AddString(userId);
@@ -78,13 +80,43 @@ public class LobbyManager : MonoBehaviour
 		if (numberOfSelectedHero == usersInThisLobby.Count)
 		{
             Message lobbyStartGameMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.AllHeroSelected);
-			foreach (var item in usersInThisLobby)
-			{
-                item.Value.Init();
-			}
-			StartGame();
             NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyStartGameMessage, lobbyKey);
 		}
+	}
+
+	public void OnUserLoadedGame(LoadGameSteps loadStep)
+	{
+		switch (loadStep)
+		{
+			case LoadGameSteps.LoadGameScene:
+				numberOfLoadedGameScene++;
+				if (numberOfLoadedGameScene == usersInThisLobby.Count)
+				{
+					foreach (var item in usersInThisLobby)
+						item.Value.Init();
+				}
+				break;
+			case LoadGameSteps.LoadPlayers:
+				numberOfCreatedAllHeros++;
+				if (numberOfCreatedAllHeros == Mathf.Pow(usersInThisLobby.Count, 2))
+					towerGenerator.Init(lobbyKey);
+				break;
+			case LoadGameSteps.LoadTowers:
+				numberOfCreatedAllTowers++;
+				if (numberOfCreatedAllTowers == usersInThisLobby.Count)
+				{
+					StartCreepGenerators();
+				}
+				break;
+			case LoadGameSteps.LoadCreeps:
+				gameStarted = true;
+				Message startGameMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.StartGame);
+				NetworkManager.Instance.SendMessageToAllUsersInLobby(startGameMessage, lobbyKey);
+				break;
+			default:
+				break;
+		}
+		
 	}
 	#endregion
 
@@ -102,11 +134,8 @@ public class LobbyManager : MonoBehaviour
 		}
 	}
 	#endregion
-
-
-	private void StartGame()
+	private void StartCreepGenerators()
 	{
-		gameStarted = true;
 		Message creepGeneratorMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.CreateCreepGenerator);
 		creepGeneratorMessage.AddUShort((ushort)creepGenerators.Count);
 		ushort generatorId = 0;
@@ -116,11 +145,10 @@ public class LobbyManager : MonoBehaviour
 			creepGeneratorMessage.AddUShort((ushort)item.generatorData.generatorLine);
 			creepGeneratorMessage = HelperMethods.Instance.AddVector3(item.transform.position, creepGeneratorMessage);
 			creepGeneratorMessage.AddUShort(generatorId);
-			item.Init(generatorId, lobbyKey);
+			item.Init(generatorId, lobbyKey, this);
 			generatorId++;
 		}
 		NetworkManager.Instance.SendMessageToAllUsersInLobby(creepGeneratorMessage, lobbyKey);
-		towerGenerator.Init(lobbyKey);
 	}
 	#region public Method
 	public void AddNewPlayer(ushort playerId, bool isTeam1)

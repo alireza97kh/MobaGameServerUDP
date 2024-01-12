@@ -1,4 +1,5 @@
 using Dobeil;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,8 +14,8 @@ namespace Dobeil
 
     public enum Teams : ushort
     {
-        Team1 = 1,
-        Team2 = 2
+        Team1 = 0,
+        Team2 = 1
     }
 
 	public enum CreateCreepState : ushort
@@ -32,6 +33,8 @@ public class CreepGeneratorData : ScriptableObject
     public float dellay;
     public ushort countOfCreepts = 3;
     public string creepTag = "";
-    public Lines generatorLine;
+	[EnumToggleButtons]
+	public Lines generatorLine;
+    [EnumToggleButtons]
     public Teams generatorTeam;
 }

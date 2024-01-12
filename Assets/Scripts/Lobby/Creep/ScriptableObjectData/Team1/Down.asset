@@ -15,7 +15,7 @@ MonoBehaviour:
   creeptsPrefab: {fileID: 8281278221921484788, guid: 7ebf47957470fc84ea7312ab1f98591e, type: 3}
   startDellay: 10
   dellay: 45
-  countOfCreepts: 3
+  countOfCreepts: 0
   creepTag: Team1Creep
   generatorLine: 2
-  generatorTeam: 1
+  generatorTeam: 0

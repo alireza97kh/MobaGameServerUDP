@@ -13,8 +13,10 @@ public class CreepGenerator : MonoBehaviour
 	private List<CreepController> allOfCreatedCreep; // cash Created Creep
 	private ushort generatorId;
 	private string lobbyKey = "";
-	public void Init(ushort _id, string _lobbyKey)
+	private LobbyManager lobby;
+	public void Init(ushort _id, string _lobbyKey, LobbyManager _lobby)
 	{
+		lobby = _lobby;
 		allOfCreatedCreep = new List<CreepController>();
 		generatorId = _id;
 		lobbyKey = _lobbyKey;
@@ -23,6 +25,7 @@ public class CreepGenerator : MonoBehaviour
 
 	IEnumerator GenerateCreep()
 	{
+		yield return new WaitUntil(() => lobby.gameStarted == false);
 		while (true)
 		{
 			yield return new WaitForSeconds(generatorData.startDellay);

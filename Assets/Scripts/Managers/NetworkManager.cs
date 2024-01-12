@@ -111,7 +111,16 @@ public class NetworkManager : SingletonBase<NetworkManager>
         }
     }
 
-    [MessageHandler((ushort)ClientToServerId.CharacterInput)]
+	[MessageHandler((ushort)ClientToServerId.LoadGame)]
+	public static void OnUsersLoadedGameScene(ushort fromClientId, Message message)
+	{
+		string lobbyId = message.GetString();
+        ushort loadStep = message.GetUShort();
+		if (Instance.lobbyHash.TryGetValue(lobbyId, out LobbyManager lobby))
+			lobby.OnUserLoadedGame((Dobeil.LoadGameSteps)loadStep);
+	}
+
+	[MessageHandler((ushort)ClientToServerId.CharacterInput)]
     public static void OnUserInputMessageGet(ushort fromClientId, Message message)
 	{
         string lobbyId = message.GetString();

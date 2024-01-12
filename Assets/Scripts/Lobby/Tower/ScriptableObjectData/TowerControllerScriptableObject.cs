@@ -9,7 +9,7 @@ using UnityEngine;
 public class TowerControllerScriptableObject : ScriptableObject
 {
     public float towerAround;
-    public int towerAttackDamage;
+    public ushort towerAttackDamage;
     public float towerDecesionDellay = 0.1f;
     public float towerAttackDellay = 0.5f;
     public int sendSyncMessageTick = 15;

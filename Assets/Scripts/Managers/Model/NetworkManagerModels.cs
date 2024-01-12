@@ -8,6 +8,7 @@ namespace NetworkManagerModels
     {
         Validation,
         SelectedHero,
+        LoadGame,
         CharacterInput,
         Ping
     }
@@ -21,13 +22,15 @@ namespace NetworkManagerModels
         HeroSelected,
         AllHeroSelected,
         CreateHero,
+        StartGame,
         Pong,
         CreateCreepGenerator,
         CreateCreep,
         SyncCreep,
         SyncHealth,
         Sync,
-        CreateTower
+        CreateTower,
+        TowerShoot
     }
 
 

@@ -1,4 +1,6 @@
 using Dobeil;
+using NetworkManagerModels;
+using Riptide;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections;
@@ -103,6 +105,12 @@ public class TowerController : MonoBehaviour
 			{
 				towerAttacTimer = 0;
 				target.health.DecreaseHp(towerData.towerAttackDamage, towerData.towerDamageType, "Tower" + id);
+				Message towerShootMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.TowerShoot);
+
+				towerShootMessage.AddUShort(id);
+				towerShootMessage.AddUShort(target.health.id);
+				towerShootMessage.AddUShort((ushort)target.health.unitType);
+				NetworkManager.Instance.SendMessageToAllUsersInLobby(towerShootMessage, lobbyKey);
 			}
 		}
 		else
@@ -126,8 +134,6 @@ public class TowerController : MonoBehaviour
 			if (index >= 0 && index < allEnemyNear.Count)
 				target = allEnemyNear[index];
 		}
-		else 
-			target = null;
 		if (CheckUnit(target, _tag))
 		{
 			if (!CheckTargeIsInAttackRange(target))
@@ -137,6 +143,8 @@ public class TowerController : MonoBehaviour
 			}
 			return true;
 		}
+		else if (target != null)
+			target = null;
 		return false;
 	}
 	private bool CheckUnit(TargetData unit, string _tag)
