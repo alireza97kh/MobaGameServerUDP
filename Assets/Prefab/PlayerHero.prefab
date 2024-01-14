@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8741269679766455604}
   - component: {fileID: 8741269679766455605}
+  - component: {fileID: 8435274060785129566}
   - component: {fileID: 8741269679766455607}
   m_Layer: 0
   m_Name: PlayerHero
@@ -28,6 +29,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 141.02, y: 7.523, z: 18.78}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -41,17 +43,43 @@ MonoBehaviour:
   m_GameObject: {fileID: 8741269679766455608}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f6080d724b57a749a63e49f15a36bbc, type: 3}
+  m_Script: {fileID: 11500000, guid: 14fb9edf5a2fe56479ed5eee4ab212e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heroName: Dobeil
+  heroIcon: {fileID: 0}
   pId: 0
-  manager: {fileID: 0}
-  selectedHeroId: 
-  userId: 
-  characterId: 0
-  isTeam1: 0
-  character: {fileID: 8741269679766455607}
-  speed: 5
+  heroId: 0
+  playerUserName: 
+  team: 0
+  xp: 0
+  gold: 0
+  sendSyncTick: 10
+  lobbyManager: {fileID: 0}
+  agent: {fileID: 8741269679766455607}
+  health: {fileID: 8435274060785129566}
+--- !u!114 &8435274060785129566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8741269679766455608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e220ab45cb996e8499f2d2e183f0afe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  unitType: 0
+  lobbyKey: 
+  isAlive: 1
+  maxHp: 0
+  haveProtectionSheild: 0
+  maxProtectionSheildCount: -1
+  increaseHpPerSec: -1
+  armor: 0
+  magicResistance: 0
 --- !u!195 &8741269679766455607
 NavMeshAgent:
   m_ObjectHideFlags: 0

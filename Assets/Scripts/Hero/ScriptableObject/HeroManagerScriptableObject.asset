@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d83e082897ea1aa48b43f232538ffdf1, type: 3}
+  m_Name: HeroManagerScriptableObject
+  m_EditorClassIdentifier: 
+  savedHerosPrefab:
+  - Id: 0
+    hero: {fileID: 8741269679766455605, guid: b16d728101dfb124f834f95bbe9a1920, type: 3}

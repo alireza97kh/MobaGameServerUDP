@@ -21,10 +21,10 @@ public class TowerController : MonoBehaviour
 	[ReadOnly] public ushort id;
 	private string lobbyKey;
 
-	private float towerAttacTimer = 0;
-
+	private DateTime lastAttackTime;
 	public void Init(string _lobbyKey, ushort _id)
 	{
+		lastAttackTime = DateTime.Now;
 		tag = team.ToString() + "Tower";
 		if (enemyTag == "")
 			SetEnemyTag();
@@ -100,10 +100,10 @@ public class TowerController : MonoBehaviour
 	{
 		if (newState == TowerState.Attacking && CheckUnit(target, enemyTag))
 		{
-			towerAttacTimer += towerData.towerDecesionDellay;
-			if (towerAttacTimer >= towerData.towerAttackDellay)
+			TimeSpan deltaTime = DateTime.Now - lastAttackTime;
+			if (deltaTime.Seconds >= towerData.towerAttackDellay)
 			{
-				towerAttacTimer = 0;
+				lastAttackTime = DateTime.Now;
 				target.health.DecreaseHp(towerData.towerAttackDamage, towerData.towerDamageType, "Tower" + id);
 				Message towerShootMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.TowerShoot);
 
@@ -112,10 +112,6 @@ public class TowerController : MonoBehaviour
 				towerShootMessage.AddUShort((ushort)target.health.unitType);
 				NetworkManager.Instance.SendMessageToAllUsersInLobby(towerShootMessage, lobbyKey);
 			}
-		}
-		else
-		{
-			towerAttacTimer = 0;
 		}
 	}
 	private bool CheckAttackActionWithTag(string _tag, List<TargetData> allEnemyNear)

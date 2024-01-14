@@ -3,7 +3,6 @@ using UnityEngine;
 public class SingletonBase<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T _instance;
-
     public static T Instance
     {
         get
@@ -34,5 +33,10 @@ public class SingletonBase<T> : MonoBehaviour where T : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public virtual void OnSingletonCreated()
+    {
+
     }
 }

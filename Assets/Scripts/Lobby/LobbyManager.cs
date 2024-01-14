@@ -6,24 +6,25 @@ using Riptide;
 using Riptide.Utils;
 using UnityEngine.SceneManagement;
 using Dobeil;
+using Sirenix.OdinInspector;
+using System.Runtime.InteropServices.ComTypes;
 
 public class LobbyManager : MonoBehaviour
 {
-    public static LobbyManager Instance = null;
-	
-    public string lobbyKey;
+    public ushort maxCountOfUser = 1;
+	public DictionaryWithEvent<ushort, UserInLobbyData> playersInLobby;
+	[TabGroup("Scriptable Objects")] public PlayersTeamData team1Data;
+	[TabGroup("Scriptable Objects")] public PlayersTeamData team2Data;
+
+	[TabGroup("Creep")] public List<CreepGenerator> creepGenerators = new List<CreepGenerator>();
+	[TabGroup("Tower")] public TowerGenerator towerGenerator;
+
+	[TabGroup("Content")] public Transform team1Parent;
+	[TabGroup("Content")] public Transform team2Parent;
+
+	[ReadOnly] public string lobbyKey;
     public bool isFull = false;
 	public bool gameStarted = false;
-    public ushort maxCountOfUser = 1;
-    public Transform team1Parent;
-    public Transform team2Parent;
-    public CharacterControllerClass characterPrefab;
-    public DictionaryWithEvent<ushort, CharacterControllerClass> usersInThisLobby = new DictionaryWithEvent<ushort, CharacterControllerClass>();
-	public PlayersTeamData team1Data;
-	public PlayersTeamData team2Data;
-
-	public List<CreepGenerator> creepGenerators = new List<CreepGenerator>();
-	public TowerGenerator towerGenerator;
 
     private int numberOfSelectedHero = 0;
     private int numberOfLoadedGameScene = 0;
@@ -31,37 +32,36 @@ public class LobbyManager : MonoBehaviour
     private int numberOfCreatedAllTowers = 0;
     void Awake()
 	{
-        Instance = this;
-        usersInThisLobby.ItemAddeed += OnUsersIdValueChange;
-        usersInThisLobby.ItemRemoved += OnUsersIdValueChange;
+		playersInLobby = new DictionaryWithEvent<ushort, UserInLobbyData>();
+		playersInLobby.ItemAdded += OnUsersIdValueChange;
+		playersInLobby.ItemRemoved += OnUsersIdValueChange;
         NetworkManager.Instance.Server.ClientDisconnected += OnClientDisconnected;
     }
 	#region Users List Value Event
-	public void OnUsersIdValueChange(ushort key)
+	public void OnUsersIdValueChange(ushort key, UserInLobbyData user)
 	{
-		if (usersInThisLobby.Count == maxCountOfUser)
+		if (playersInLobby.Count == maxCountOfUser)
 		{
             isFull = true;
             Message lobbyMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.LobbyIsReady);
             lobbyMessage.AddString(lobbyKey);
             NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyMessage, lobbyKey);
         }
-		else if (usersInThisLobby.Count > maxCountOfUser)
+		else if (playersInLobby.Count > maxCountOfUser)
 		{
             DestroyImmediate(this);
 		}
 	}
-    public void OnUsersIdValueChange(ushort key, CharacterControllerClass value)
+    public void OnUsersIdValueChange(ushort key)
     {
-        if (usersInThisLobby.Count == maxCountOfUser)
+        if (playersInLobby.Count == maxCountOfUser)
         {
-            Debug.Log("user Id is full");
             isFull = true;
             Message lobbyMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.LobbyIsReady);
             lobbyMessage.AddString(lobbyKey);
             NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyMessage, lobbyKey);
         }
-        else if (usersInThisLobby.Count > maxCountOfUser)
+        else if (playersInLobby.Count > maxCountOfUser)
         {
             DestroyImmediate(this);
         }
@@ -69,18 +69,30 @@ public class LobbyManager : MonoBehaviour
 
     public void OnUserSelectHero(ushort fromClientId, Message msg)
 	{
-        string userId = msg.GetString();
-        string heroId = msg.GetString();
-        usersInThisLobby[fromClientId].OnSelectedHero(heroId, userId, fromClientId, this);
-        numberOfSelectedHero++;
-        Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.HeroSelected);
-        message.AddString(heroId);
-        message.AddString(userId);
-        NetworkManager.Instance.SendMessageToAllUsersInLobby(message, lobbyKey);
-		if (numberOfSelectedHero == usersInThisLobby.Count)
+		if (playersInLobby.TryGetValue(fromClientId, out UserInLobbyData user))
 		{
-            Message lobbyStartGameMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.AllHeroSelected);
-            NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyStartGameMessage, lobbyKey);
+			ushort heroId = msg.GetUShort();
+			HeroControllerBase newHero = Instantiate(
+				HeroManager.Instance.GetHeroPrefab((HeroId)heroId), 
+				user.player.playerTeam == Teams.Team1 ? team1Parent : team2Parent);
+			newHero.heroId = heroId;
+			newHero.team = user.player.playerTeam;
+			newHero.agent.Warp(user.player.playerTeam == Teams.Team1 
+				? team1Data.teamPlayerSpawnPosition 
+				: team2Data.teamPlayerSpawnPosition);
+			user.hero = newHero;
+			user.hero.OnSelectedHero(heroId, fromClientId, this);
+			numberOfSelectedHero++;
+
+			Message message = Message.Create(MessageSendMode.Reliable, ServerToClientId.HeroSelected);
+			message.AddUShort(heroId);
+			message.AddString(user.player.userId);
+			NetworkManager.Instance.SendMessageToAllUsersInLobby(message, lobbyKey);
+			if (numberOfSelectedHero == playersInLobby.Count)
+			{
+				Message lobbyStartGameMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.AllHeroSelected);
+				NetworkManager.Instance.SendMessageToAllUsersInLobby(lobbyStartGameMessage, lobbyKey);
+			}
 		}
 	}
 
@@ -90,23 +102,21 @@ public class LobbyManager : MonoBehaviour
 		{
 			case LoadGameSteps.LoadGameScene:
 				numberOfLoadedGameScene++;
-				if (numberOfLoadedGameScene == usersInThisLobby.Count)
+				if (numberOfLoadedGameScene == playersInLobby.Count)
 				{
-					foreach (var item in usersInThisLobby)
-						item.Value.Init();
+					foreach (var item in playersInLobby)
+						item.Value.hero.Init();
 				}
 				break;
 			case LoadGameSteps.LoadPlayers:
 				numberOfCreatedAllHeros++;
-				if (numberOfCreatedAllHeros == Mathf.Pow(usersInThisLobby.Count, 2))
+				if (numberOfCreatedAllHeros == Mathf.Pow(playersInLobby.Count, 2))
 					towerGenerator.Init(lobbyKey);
 				break;
 			case LoadGameSteps.LoadTowers:
 				numberOfCreatedAllTowers++;
-				if (numberOfCreatedAllTowers == usersInThisLobby.Count)
-				{
+				if (numberOfCreatedAllTowers == playersInLobby.Count)
 					StartCreepGenerators();
-				}
 				break;
 			case LoadGameSteps.LoadCreeps:
 				gameStarted = true;
@@ -123,14 +133,12 @@ public class LobbyManager : MonoBehaviour
 	#region Events
 	void OnClientDisconnected(object sender, ServerDisconnectedEventArgs e)
 	{
-		if (usersInThisLobby.ContainsKey(e.Client.Id))
+		if (playersInLobby.ContainsKey(e.Client.Id))
 		{
             Debug.Log("Disconnected Client is on this Lobby ");
-            usersInThisLobby.Remove(e.Client.Id);
-			if (usersInThisLobby.Count == 0)
-			{
+            playersInLobby.Remove(e.Client.Id);
+			if (playersInLobby.Count == 0)
 				Destroy(gameObject);
-			}
 		}
 	}
 	#endregion
@@ -151,22 +159,24 @@ public class LobbyManager : MonoBehaviour
 		NetworkManager.Instance.SendMessageToAllUsersInLobby(creepGeneratorMessage, lobbyKey);
 	}
 	#region public Method
-	public void AddNewPlayer(ushort playerId, bool isTeam1)
+	public void AddNewPlayer(ushort _pId, string _userId, Teams _team)
 	{
-        CharacterControllerClass newUser = Instantiate(characterPrefab, isTeam1 ? team1Parent : team2Parent);
-        newUser.characterId = playerId;
-		newUser.isTeam1 = isTeam1;
-		newUser.character.Warp(isTeam1 ? team1Data.teamPlayerSpawnPosition : team2Data.teamPlayerSpawnPosition);
-        usersInThisLobby.Add(playerId, newUser);
-
+		playersInLobby.Add(_pId,
+			new UserInLobbyData()
+			{
+				pId = _pId,
+				player = new PlayerController()
+				{
+					playerTeam = _team,
+					userId = _userId
+				}
+			});
+		
 	}
-
-	public void UserInputManager(ushort playerId, Vector2 input)
+	public void UserInputManager(ushort pId, Vector2 input)
 	{
-		if (usersInThisLobby.ContainsKey(playerId))
-		{
-			usersInThisLobby[playerId].PlayerInputController(input);
-		}
+		if (playersInLobby.TryGetValue(pId, out UserInLobbyData user))
+			user.hero.PlayerInputMove(input);
 	}
 	#endregion
 }

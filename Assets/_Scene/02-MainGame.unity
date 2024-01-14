@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1301014215}
   - component: {fileID: 1301014216}
+  - component: {fileID: 1301014217}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -171,6 +172,19 @@ MonoBehaviour:
   maxCountOfUsers: 5
   currentLobbyTofill: {fileID: 0}
   lobbyManagerPrefab: {fileID: 5318642020389647985, guid: 682731552532c2848885d12ce91bcaa3, type: 3}
+--- !u!114 &1301014217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1301014214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96374f444293f5c4fa9b77609ad75fdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heroManagerData: {fileID: 11400000, guid: e685b227456a68940822622660e5c10a, type: 2}
 --- !u!1 &1306226873
 GameObject:
   m_ObjectHideFlags: 0

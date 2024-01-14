@@ -35,7 +35,7 @@ namespace NetworkManagerModels
 
 
     [Serializable]
-    public class ListWithChangeEvent<T> : List<T>
+    public class ListWithEvent<T> : List<T>
     {
         public event Action<T> ItemAdded;
         public event Action<T> ItemRemoved;
@@ -56,13 +56,13 @@ namespace NetworkManagerModels
     [Serializable]
     public class DictionaryWithEvent<T1, T2> : Dictionary<T1, T2>
 	{
-        public event Action<T1, T2> ItemAddeed;
+        public event Action<T1, T2> ItemAdded;
         public event Action<T1> ItemRemoved;
 
         public new void Add(T1 key, T2 value)
 		{
             base.Add(key, value);
-            ItemAddeed?.Invoke(key, value);
+			ItemAdded?.Invoke(key, value);
 		}
 
         public new void Remove(T1 key)
@@ -72,7 +72,6 @@ namespace NetworkManagerModels
 		}
 
 	}
-
 
     [Serializable]
     public class UsersHeroInLobby

@@ -6,6 +6,7 @@ using UnityEngine;
 using NetworkManagerModels;
 using System;
 using System.IO;
+using Dobeil;
 
 public class NetworkManager : SingletonBase<NetworkManager>
 {
@@ -18,7 +19,10 @@ public class NetworkManager : SingletonBase<NetworkManager>
     public LobbyManager currentLobbyTofill;
     public LobbyManager lobbyManagerPrefab;
 
-	// Start is called before the first frame update
+    private int lobbyCount = 0;
+	private int countOfMessage = 0;
+	private int countOfBytes = 0;
+
 	void Start()
     {
         Application.runInBackground = true;
@@ -27,6 +31,7 @@ public class NetworkManager : SingletonBase<NetworkManager>
         RiptideLogger.Initialize(Debug.Log, Debug.Log, Debug.LogWarning, Debug.LogError, true);
         Server = new Server();
         Server.Start(port, maxCountOfUsers);
+        Server.TimeoutTime = 10000;
         Server.ClientConnected += NewPlayerConnected;
         Server.ClientDisconnected += PlayerLeft;
     }
@@ -44,51 +49,48 @@ public class NetworkManager : SingletonBase<NetworkManager>
         //File.AppendAllText(Application.dataPath + "network.txt",
             //$"count of Message {countOfMessage} and count of Bytes {countOfBytes} \n");
     }
-	int count = 0;
     public string keyGenerator()
 	{
-        return $"lobby{count++}";
+        return $"lobby{lobbyCount++}";
 	}
     #region Send Messages Method
-    private int countOfMessage = 0;
-    private int countOfBytes = 0;
     public void SendMessageToCustomUser(Message message, ushort customUserId)
     {
         countOfMessage++;
         countOfBytes += message.BytesInUse;
         Server.Send(message, customUserId);
     }
-
     public void SendMessageToAllUsersInLobby(Message message, string lobbyKey)
 	{
-		if (lobbyHash.ContainsKey(lobbyKey))
+		if (lobbyHash.TryGetValue(lobbyKey, out LobbyManager lobby))
 		{
-			foreach (ushort userId in lobbyHash[lobbyKey].usersInThisLobby.Keys)
+			foreach (ushort userId in lobby.playersInLobby.Keys)
                 SendMessageToCustomUser(message, userId);
             
 		}
 	}
-    #endregion
-
-    IEnumerator MessageCounter()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(1);
-            if (countOfMessage == 0 && countOfBytes == 0)
-                break;
-            Debug.Log(countOfMessage + "    " + countOfBytes);
-            countOfMessage = 0;
-            countOfBytes = 0;
+	IEnumerator MessageCounter()
+	{
+		while (true)
+		{
+			yield return new WaitForSeconds(1);
+			if (countOfMessage == 0 && countOfBytes == 0)
+				break;
+			Debug.Log(countOfMessage + "    " + countOfBytes);
+			countOfMessage = 0;
+			countOfBytes = 0;
 
 		}
-    }
-    #region MessageHandler
-    [MessageHandler((ushort)ClientToServerId.Validation)]
+	}
+	#endregion
+
+
+	#region MessageHandler
+	//********************
+	[MessageHandler((ushort)ClientToServerId.Validation)]
     public static void ValidateConnectedUser(ushort fromClientId, Message message)
     {
-        Debug.LogError("Validation");
-        string userKey = message.GetString();
+        string userId = message.GetString();
         if (Instance.currentLobbyTofill == null || Instance.currentLobbyTofill.isFull)
         {
             Instance.currentLobbyTofill = Instantiate(Instance.lobbyManagerPrefab, Instance.transform);
@@ -96,12 +98,17 @@ public class NetworkManager : SingletonBase<NetworkManager>
             Instance.currentLobbyTofill.lobbyKey = lobbyKey;
             Instance.lobbyHash.Add(lobbyKey, Instance.currentLobbyTofill);
         }
-        Instance.currentLobbyTofill.AddNewPlayer(fromClientId, (Instance.currentLobbyTofill.usersInThisLobby.Count % 2) == 0);
+        Instance.currentLobbyTofill.AddNewPlayer(
+            fromClientId, 
+            userId, 
+            (Teams)(Instance.currentLobbyTofill.playersInLobby.Count % 2));
         Message serverMessage = Message.Create(MessageSendMode.Reliable, (ushort)ServerToClientId.validation);
         serverMessage.AddString(Instance.currentLobbyTofill.lobbyKey);
         Instance.Server.Send(serverMessage, fromClientId);
     }
-    [MessageHandler((ushort)ClientToServerId.SelectedHero)]
+
+	//********************
+	[MessageHandler((ushort)ClientToServerId.SelectedHero)]
     public static void OnUsersSelectedHero(ushort fromClientId, Message message)
     {
         string lobbyId = message.GetString();
@@ -111,6 +118,7 @@ public class NetworkManager : SingletonBase<NetworkManager>
         }
     }
 
+	//********************
 	[MessageHandler((ushort)ClientToServerId.LoadGame)]
 	public static void OnUsersLoadedGameScene(ushort fromClientId, Message message)
 	{
@@ -120,6 +128,7 @@ public class NetworkManager : SingletonBase<NetworkManager>
 			lobby.OnUserLoadedGame((Dobeil.LoadGameSteps)loadStep);
 	}
 
+	//********************
 	[MessageHandler((ushort)ClientToServerId.CharacterInput)]
     public static void OnUserInputMessageGet(ushort fromClientId, Message message)
 	{
@@ -131,7 +140,8 @@ public class NetworkManager : SingletonBase<NetworkManager>
 		}
     }
 
-    [MessageHandler((ushort)ClientToServerId.Ping)]
+	//********************
+	[MessageHandler((ushort)ClientToServerId.Ping)]
     public static void OnPingMessageGet(ushort fromClientId, Message message)
     {
         Message pongMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.Pong);
