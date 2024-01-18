@@ -152,13 +152,13 @@ public class CreepController : MonoBehaviour
             case CreepStateAction.MoveToEnemyCreep:
                 return CheckToMoveToEnemyByTag(allEnemyNear, "Creep");
             case CreepStateAction.MoveToEnemyHero:
-                return CheckToMoveToEnemyByTag(allEnemyNear, "Player");
+                return CheckToMoveToEnemyByTag(allEnemyNear, "Hero");
             case CreepStateAction.MoveToEnemyTower:
                 return CheckToMoveToEnemyByTag(allEnemyNear, "Tower");
             case CreepStateAction.AttackToEnemyCreep:
                 return CheckAttackActionWithTag(target, "Creep");
             case CreepStateAction.AttackToEnemyHero:
-                return CheckAttackActionWithTag(target, "Player");
+                return CheckAttackActionWithTag(target, "Hero");
             case CreepStateAction.AttackToEnemyTower:
                 return CheckAttackActionWithTag(target, "Tower");
             default:

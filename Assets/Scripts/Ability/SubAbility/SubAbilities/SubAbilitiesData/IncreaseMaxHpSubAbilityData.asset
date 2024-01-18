@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92a49f36226214043b7ab69ef760937d, type: 3}
+  m_Name: IncreaseMaxHpSubAbilityData
+  m_EditorClassIdentifier: 
+  Type: 1
+  subAbilityNumber:
+    Type: 1
+    Percent: 0
+    IsRandomCount: 0
+    Count: 0
+    CountRange:
+      Min: 0
+      Max: 0
+  hasVfx: 0
+  vfxObject: {fileID: 0}
+  hasSfx: 0
+  sfxSource: {fileID: 0}
+  healType: 1

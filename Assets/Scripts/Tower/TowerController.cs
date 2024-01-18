@@ -90,7 +90,7 @@ public class TowerController : MonoBehaviour
 			case TowerStateAction.AttackToEnemyCreep:
 				return CheckAttackActionWithTag("Creep", allEnemyNear);
 			case TowerStateAction.AttackToEnemyHero:
-				return CheckAttackActionWithTag("Player", allEnemyNear);
+				return CheckAttackActionWithTag("Hero", allEnemyNear);
 			default:
 				Debug.Log("Invalid State!!!");
 				return false;

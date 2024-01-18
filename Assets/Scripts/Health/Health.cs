@@ -104,6 +104,17 @@ public class Health : MonoBehaviour
         else
             HpCount += count;
 	}
+
+    public void ChangeMaxHp(int count)
+    {
+        if (maxHp - count > 0)
+        {
+            maxHp -= count;
+            if (HpCount > maxHp)
+                HpCount = maxHp;
+        }
+    }
+
     private void SendSyncHealthMessage()
 	{
         Message healthMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.SyncHealth);

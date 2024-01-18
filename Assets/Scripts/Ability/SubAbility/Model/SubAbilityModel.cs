@@ -3,19 +3,6 @@ using System;
 
 namespace Dobeil
 {
-	public enum AbilitieType : ushort
-	{
-		Active = 0,
-		Passive = 1,
-		Autocast = 2
-	}
-	public enum LevelEnum : ushort
-	{
-		One = 1,
-		Two = 2,
-		Three = 3,
-		Four = 4
-	}
 	public enum SubAbilityType : ushort
 	{
 		None = 0,
@@ -77,28 +64,41 @@ namespace Dobeil
 	public class SubAbilityModificationData
 	{
 		[EnumToggleButtons] [HideLabel] public AdditionTypeEnum Type;
-		[ShowIf("C_Percent")][PropertyRange(0, 1)] public float Percent = 0;
-		[ShowIf("C_Fixed")] public bool IsRandomCount = false;
-		[ShowIf("C_Fixed2")] public int Count = 0;
-		[ShowIf("C_FixedRandom")] public RangeDataClass CountRange;
+		[ShowIf("IsPercent")][PropertyRange(0, 1)] public float Percent = 0;
+		[ShowIf("IsFixed")] public bool IsRandomCount = false;
+		[ShowIf("IsFixedNumber")] public float Count = 0;
+		[ShowIf("IsFixedRandom")] public RangeDataClass CountRange;
 
-		bool C_Percent()
+		private bool IsPercent()
 		{
 			return Type == AdditionTypeEnum.Percent;
 		}
 
-		bool C_Fixed()
+		private bool IsFixed()
 		{
 			return Type == AdditionTypeEnum.FixedNumber;
 		}
 
-		bool C_FixedRandom()
+		private bool IsFixedRandom()
 		{
-			return C_Fixed() && IsRandomCount;
+			return IsFixed() && IsRandomCount;
 		}
-		bool C_Fixed2()
+		private bool IsFixedNumber()
 		{
-			return C_Fixed() && !IsRandomCount;
+			return IsFixed() && !IsRandomCount;
+		}
+
+		public float GetCount()
+		{
+			if (IsFixed())
+			{
+				if (IsFixedNumber())
+					return Count;
+				else
+					return UnityEngine.Random.Range(CountRange.Min, CountRange.Max);
+			}
+			else
+				return Percent;
 		}
 	}
 }
