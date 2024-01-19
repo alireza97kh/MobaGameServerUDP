@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Sirenix.OdinInspector;
 using ReadOnlyAttribute = Sirenix.OdinInspector.ReadOnlyAttribute;
+using UnityEngine.Windows;
 public abstract class HeroControllerBase : MonoBehaviour
 {
     public string heroName;
@@ -46,10 +47,28 @@ public abstract class HeroControllerBase : MonoBehaviour
         lobbyManager = _manager;
         pId = _pId;
     }
-    public virtual void PlayerInputMove(Vector2 input)
+    public virtual void PlayerInputMove(Message _heroInput)
     {
-		Vector3 movement = new(-input.y, 0f, input.x);
-		agent.SetDestination(transform.position + movement);
+		HeroInputType heroInputType = (HeroInputType)_heroInput.GetUShort();
+
+		switch (heroInputType)
+		{
+			case HeroInputType.Movement:
+				Vector2 movementInput = HelperMethods.Instance.GetVector2(_heroInput);
+				Vector3 movement = new(-movementInput.y, 0f, movementInput.x);
+				agent.SetDestination(transform.position + movement);
+				break;
+			case HeroInputType.BaseAttack:
+				break;
+			case HeroInputType.Ability:
+				break;
+			case HeroInputType.Item:
+				break;
+			default:
+				break;
+		}
+
+		
 	}
     protected virtual void Update()
     {

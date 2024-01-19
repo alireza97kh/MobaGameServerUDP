@@ -135,8 +135,7 @@ public class NetworkManager : SingletonBase<NetworkManager>
         string lobbyId = message.GetString();
 		if (Instance.lobbyHash.ContainsKey(lobbyId))
 		{
-            Vector2 userInput = message.GetVector2();
-            Instance.lobbyHash[lobbyId].UserInputManager(fromClientId, userInput);
+            Instance.lobbyHash[lobbyId].UserInputManager(fromClientId, message);
 		}
     }
 

@@ -173,10 +173,10 @@ public class LobbyManager : MonoBehaviour
 			});
 		
 	}
-	public void UserInputManager(ushort pId, Vector2 input)
+	public void UserInputManager(ushort pId, Message _inputMessage)
 	{
 		if (playersInLobby.TryGetValue(pId, out UserInLobbyData user))
-			user.hero.PlayerInputMove(input);
+			user.hero.PlayerInputMove(_inputMessage);
 	}
 	#endregion
 }

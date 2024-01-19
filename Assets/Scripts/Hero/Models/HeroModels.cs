@@ -14,4 +14,11 @@ namespace Dobeil
 		public HeroId Id;
 		public HeroControllerBase hero;
 	}
+	public enum HeroInputType
+	{
+		Movement = 0,
+		BaseAttack = 1,
+		Ability = 2,
+		Item = 3
+	}
 }
