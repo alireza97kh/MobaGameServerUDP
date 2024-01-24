@@ -19,3 +19,4 @@ MonoBehaviour:
   sendSyncMessageTick: 15
   towerDamageType: 1
   towerActionScore: {fileID: 11400000, guid: 8d4d346131408664e9f293a7b871a154, type: 2}
+  towerMaxHp: 5000

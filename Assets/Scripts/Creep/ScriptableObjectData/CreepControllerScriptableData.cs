@@ -16,4 +16,5 @@ public class CreepControllerScriptableData : ScriptableObject
 	public float creepDetection = 7;
 	public int sendSyncMessageTick = 15;
 	public DamageType creepDamageType;
+	public int creepMaxHp;
 }

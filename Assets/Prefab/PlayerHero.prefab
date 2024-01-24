@@ -95,8 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14fb9edf5a2fe56479ed5eee4ab212e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heroName: Dobeil
-  heroIcon: {fileID: 0}
+  heroData: {fileID: 0}
   pId: 0
   heroId: 0
   userId: 
@@ -123,7 +122,6 @@ MonoBehaviour:
   unitType: 0
   lobbyKey: 
   isAlive: 1
-  maxHp: 5000
   haveProtectionSheild: 0
   maxProtectionSheildCount: -1
   increaseHpPerSec: -1

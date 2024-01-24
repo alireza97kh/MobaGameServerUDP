@@ -16,4 +16,5 @@ public class TowerControllerScriptableObject : ScriptableObject
     [EnumToggleButtons]
     public DamageType towerDamageType;
     public TowerActionScore towerActionScore;
+    public int towerMaxHp;
 }

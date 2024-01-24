@@ -30,7 +30,7 @@ public class TowerController : MonoBehaviour
 			SetEnemyTag();
 		id = _id;
 		lobbyKey = _lobbyKey;
-		towerHealth.Init(lobbyKey, id, CurrentUnitHealthType.Tower);
+		towerHealth.Init(lobbyKey, id, CurrentUnitHealthType.Tower, towerData.towerMaxHp);
 		StartCoroutine(TowerDecesion());
 	}
 	private void SetEnemyTag()

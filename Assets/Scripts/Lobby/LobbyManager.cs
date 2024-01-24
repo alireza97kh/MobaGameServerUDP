@@ -13,6 +13,7 @@ public class LobbyManager : MonoBehaviour
 {
     public ushort maxCountOfUser = 1;
 	public DictionaryWithEvent<ushort, UserInLobbyData> playersInLobby;
+	public Dictionary<int, ObjectInGameBase> objectsInGame = new Dictionary<int, ObjectInGameBase>();
 	[TabGroup("Scriptable Objects")] public PlayersTeamData team1Data;
 	[TabGroup("Scriptable Objects")] public PlayersTeamData team2Data;
 

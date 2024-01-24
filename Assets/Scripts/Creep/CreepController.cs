@@ -41,7 +41,7 @@ public class CreepController : MonoBehaviour
             lobbyKey = _lobbyKey;
         if (_creepId != 0)
             creepId = _creepId;
-        health.Init(lobbyKey, creepId, CurrentUnitHealthType.Creep);
+        health.Init(lobbyKey, creepId, CurrentUnitHealthType.Creep, creepData.creepMaxHp);
         gameObject.SetActive(true);
         StartCoroutine(CreepDecesion());
     }

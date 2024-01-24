@@ -5,19 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Dobeil
 {
-    public enum Lines : ushort
-    {
-        Top = 0,
-        Mid = 1,
-        Down = 2
-    }
-
-    public enum Teams : ushort
-    {
-        Team1 = 0,
-        Team2 = 1
-    }
-
 	public enum CreateCreepState : ushort
 	{
         Instantiate = 0,
