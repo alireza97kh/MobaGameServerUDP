@@ -23,7 +23,7 @@ public class Health : MonoBehaviour
         }
     }
     private int _hpCount;
-    private int maxHp;
+    public int maxHp;
     public bool haveProtectionSheild = false;
     public int maxProtectionSheildCount = -1;
 
@@ -33,7 +33,7 @@ public class Health : MonoBehaviour
     public int magicResistance = 0;
 
     private Dictionary<string, int> attackers;
-    public void Init(string _lobbyKey, ushort _id, CurrentUnitHealthType _unitType, int _maxHp)
+    public void Init(string _lobbyKey, ushort _id, CurrentUnitHealthType _unitType)
 	{
         unitType = _unitType;
         lobbyKey = _lobbyKey;
@@ -41,7 +41,6 @@ public class Health : MonoBehaviour
         isAlive = true;
         HpCount = maxHp;
         attackers = new Dictionary<string, int>();
-        maxHp = _maxHp;
 	}
 
     public void DecreaseHp(int count, DamageType type, string attackerId, Action<bool> onKilledAction = null)

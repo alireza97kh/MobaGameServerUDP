@@ -36,7 +36,8 @@ public abstract class HeroControllerBase : MonoBehaviour
     {
 		tag = team.ToString() + "Hero";
 		enemyTag = team == Teams.Team1 ? "Team2" : "Team1";
-		health.Init(lobbyManager.lobbyKey, pId, CurrentUnitHealthType.Hero, heroData.heroMaxHp);
+		health.maxHp = heroData.heroMaxHp;
+		health.Init(lobbyManager.lobbyKey, pId, CurrentUnitHealthType.Hero);
 		SendCreateMessage();
 	}
 

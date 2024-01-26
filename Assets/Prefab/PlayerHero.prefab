@@ -95,17 +95,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14fb9edf5a2fe56479ed5eee4ab212e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heroData: {fileID: 0}
+  heroData: {fileID: 11400000, guid: 59b7662bc80a58a4b9edc5dd47ba8fff, type: 2}
   pId: 0
   heroId: 0
   userId: 
   team: 0
   xp: 0
   gold: 0
-  sendSyncTick: 10
+  sendSyncTick: 5
   agent: {fileID: 8741269679766455607}
   health: {fileID: 8435274060785129566}
-  ability: {fileID: 0}
+  ability: {fileID: 2315721559114585718}
 --- !u!114 &8435274060785129566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,6 +122,7 @@ MonoBehaviour:
   unitType: 0
   lobbyKey: 
   isAlive: 1
+  maxHp: 0
   haveProtectionSheild: 0
   maxProtectionSheildCount: -1
   increaseHpPerSec: -1
