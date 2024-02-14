@@ -112,10 +112,8 @@ public class NetworkManager : SingletonBase<NetworkManager>
     public static void OnUsersSelectedHero(ushort fromClientId, Message message)
     {
         string lobbyId = message.GetString();
-        if (Instance.lobbyHash.ContainsKey(lobbyId))
-        {
-            Instance.lobbyHash[lobbyId].OnUserSelectHero(fromClientId, message);
-        }
+        if (Instance.lobbyHash.TryGetValue(lobbyId, out LobbyManager _lobby))
+			_lobby.OnUserSelectHero(fromClientId, message);
     }
 
 	//********************
@@ -125,7 +123,7 @@ public class NetworkManager : SingletonBase<NetworkManager>
 		string lobbyId = message.GetString();
         ushort loadStep = message.GetUShort();
 		if (Instance.lobbyHash.TryGetValue(lobbyId, out LobbyManager lobby))
-			lobby.OnUserLoadedGame((Dobeil.LoadGameSteps)loadStep);
+			lobby.OnUserLoadedGame((LoadGameSteps)loadStep);
 	}
 
 	//********************
@@ -133,10 +131,8 @@ public class NetworkManager : SingletonBase<NetworkManager>
     public static void OnUserInputMessageGet(ushort fromClientId, Message message)
 	{
         string lobbyId = message.GetString();
-		if (Instance.lobbyHash.ContainsKey(lobbyId))
-		{
-            Instance.lobbyHash[lobbyId].UserInputManager(fromClientId, message);
-		}
+		if (Instance.lobbyHash.TryGetValue(lobbyId, out LobbyManager _lobby))
+			_lobby.UserInputManager(fromClientId, message);
     }
 
 	//********************
