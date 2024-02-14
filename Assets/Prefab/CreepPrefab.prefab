@@ -69,12 +69,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad01a752b74f9f48b09a36ed89344c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data: {fileID: 0}
+  element: 2
+  team: 0
+  elementId: 0
+  enemyTag: 
+  health: {fileID: 8070823046965281520}
+  Collider: {fileID: 8512128335788274982}
+  agent: {fileID: 4088607720219647277}
+  isAlive: 1
+  target: {fileID: 0}
   firstWaypoint: {fileID: 0}
   CurrentWaypoint: {fileID: 0}
-  agent: {fileID: 4088607720219647277}
   creepData: {fileID: 11400000, guid: 706ac0125b2eed343b7e8f5411ccb7a3, type: 2}
-  isAlive: 1
-  creepId: 65535
 --- !u!114 &8070823046965281520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,7 +95,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
-  unitType: 0
+  unitType: 2
   lobbyKey: 
   isAlive: 1
   maxHp: 1000

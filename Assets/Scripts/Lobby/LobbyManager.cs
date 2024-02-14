@@ -106,13 +106,13 @@ public class LobbyManager : MonoBehaviour
 				if (numberOfLoadedGameScene == playersInLobby.Count)
 				{
 					foreach (var item in playersInLobby)
-						item.Value.hero.Init();
+						item.Value.hero.Init(this, item.Key);
 				}
 				break;
 			case LoadGameSteps.LoadPlayers:
 				numberOfCreatedAllHeros++;
 				if (numberOfCreatedAllHeros == Mathf.Pow(playersInLobby.Count, 2))
-					towerGenerator.Init(lobbyKey);
+					towerGenerator.Init(this);
 				break;
 			case LoadGameSteps.LoadTowers:
 				numberOfCreatedAllTowers++;

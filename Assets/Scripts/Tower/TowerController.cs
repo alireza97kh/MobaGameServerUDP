@@ -8,42 +8,24 @@ using System.Collections.Generic;
 using TreeEditor;
 using UnityEngine;
 
-public class TowerController : MonoBehaviour
+public class TowerController : ObjectInGameBase
 {
-	[EnumToggleButtons] [HideLabel] public TowersTeam team;
 	[EnumToggleButtons] [HideLabel] public TowersLine line;
-	[SerializeField] private Health towerHealth;
 	[SerializeField] private TowerControllerScriptableObject towerData;
 
 	private TowerState currentState;
-	private TargetData target = null;
-	private string enemyTag = "";
-	[ReadOnly] public ushort id;
-	private string lobbyKey;
 
 	private DateTime lastAttackTime;
-	public void Init(string _lobbyKey, ushort _id)
+	public override void Init(LobbyManager _manager, ushort _elementId)
 	{
+		data = towerData;
+		base.Init(_manager, _elementId);
 		lastAttackTime = DateTime.Now;
-		tag = team.ToString() + "Tower";
-		if (enemyTag == "")
-			SetEnemyTag();
-		id = _id;
-		lobbyKey = _lobbyKey;
-		towerHealth.maxHp = towerData.towerMaxHp;
-		towerHealth.Init(lobbyKey, id, CurrentUnitHealthType.Tower);
 		StartCoroutine(TowerDecesion());
-	}
-	private void SetEnemyTag()
-	{
-		if (team == TowersTeam.Team1)
-			enemyTag = "Team2";
-		else
-			enemyTag = "Team1";
 	}
 	private IEnumerator TowerDecesion()
 	{
-		while (towerHealth.isAlive)
+		while (health.isAlive)
 		{
 			currentState = GetCurrentState();
 			ExecuteAction(currentState);
@@ -56,6 +38,7 @@ public class TowerController : MonoBehaviour
 		TowerStateAction bestAction = TowerStateAction.DoNothing;
 
 		float bestScore = score.DoNothing;
+		List<ObjectInGameBase> allEnemyNear = FindAllTarget();
 		foreach (TowerStateAction action in Enum.GetValues(typeof(TowerStateAction)))
 		{
 			if (action == TowerStateAction.DoNothing)
@@ -64,7 +47,7 @@ public class TowerController : MonoBehaviour
 			float actionScore = (float)score.GetType().GetField(action.ToString()).GetValue(score);
 			if (actionScore > bestScore)
 			{
-				if (!IsActionValid(action))
+				if (!IsActionValid(allEnemyNear, action))
 				{
 					continue;
 				}
@@ -81,17 +64,17 @@ public class TowerController : MonoBehaviour
 			_ => TowerState.Idle,
 		};
 	}
-	private bool IsActionValid(TowerStateAction action)
+	private bool IsActionValid(List<ObjectInGameBase> allEnemyNear, TowerStateAction action)
 	{
-		List<TargetData> allEnemyNear = FindAllTarget();
+		
 		switch (action)
 		{
 			case TowerStateAction.DoNothing:
 				return allEnemyNear.Count == 0;
 			case TowerStateAction.AttackToEnemyCreep:
-				return CheckAttackActionWithTag("Creep", allEnemyNear);
+				return CheckAttackActionWithTag(allEnemyNear, GameElement.Creep.ToString());
 			case TowerStateAction.AttackToEnemyHero:
-				return CheckAttackActionWithTag("Hero", allEnemyNear);
+				return CheckAttackActionWithTag(allEnemyNear, GameElement.Hero.ToString());
 			default:
 				Debug.Log("Invalid State!!!");
 				return false;
@@ -99,78 +82,25 @@ public class TowerController : MonoBehaviour
 	}
 	private void ExecuteAction(TowerState newState)
 	{
-		if (newState == TowerState.Attacking && CheckUnit(target, enemyTag))
+		if (newState == TowerState.Attacking && CheckTargeIsAvaiable(target))
 		{
 			TimeSpan deltaTime = DateTime.Now - lastAttackTime;
-			if (deltaTime.Seconds >= towerData.towerAttackDellay)
+			if (deltaTime.Seconds >= towerData.attackDellay)
 			{
 				lastAttackTime = DateTime.Now;
-				target.health.DecreaseHp(towerData.towerAttackDamage, towerData.towerDamageType, "Tower" + id);
+				target.DecreaseHp(towerData.baseAttackDamage, DamageType.Physical, GameElement.Structure.ToString() + elementId);
 				Message towerShootMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.TowerShoot);
 
-				towerShootMessage.AddUShort(id);
+				towerShootMessage.AddUShort(elementId);
 				towerShootMessage.AddUShort(target.health.id);
 				towerShootMessage.AddUShort((ushort)target.health.unitType);
-				NetworkManager.Instance.SendMessageToAllUsersInLobby(towerShootMessage, lobbyKey);
+				NetworkManager.Instance.SendMessageToAllUsersInLobby(towerShootMessage, manager.lobbyKey);
 			}
 		}
 	}
-	private bool CheckAttackActionWithTag(string _tag, List<TargetData> allEnemyNear)
+	private bool CheckAttackActionWithTag(List<ObjectInGameBase> targets, string _tag)
 	{
-		if ((!CheckUnit(target, enemyTag) || !CheckTargeIsInAttackRange(target)) && allEnemyNear.Count > 0)
-		{
-			int index = -1;
-			float maxDistance = towerData.towerAround;
-			for (int i = 0; i < allEnemyNear.Count; i++)
-			{
-				if (allEnemyNear[i].transform.tag.Contains(_tag) && Vector3.Distance(transform.position, allEnemyNear[i].transform.position) < maxDistance)
-				{
-					index = i;
-				}
-			}
-			if (index >= 0 && index < allEnemyNear.Count)
-				target = allEnemyNear[index];
-		}
-		if (CheckUnit(target, _tag))
-		{
-			if (!CheckTargeIsInAttackRange(target))
-			{
-				target = null;
-				return false;
-			}
-			return true;
-		}
-		else if (target != null)
-			target = null;
-		return false;
+		return FindNearestEnemy(targets, _tag) != null;
 	}
-	private bool CheckUnit(TargetData unit, string _tag)
-	{
-		return unit != null &&
-			unit.transform != null &&
-			unit.health != null &&
-			unit.health.isAlive &&
-			unit.transform.tag.Contains(_tag);
-	}
-	private bool CheckTargeIsInAttackRange(TargetData unit)
-	{
-		float distanceToTarget = Vector3.Distance(transform.position, unit.transform.position);
-		return (distanceToTarget < towerData.towerAround);
-
-	}
-	private List<TargetData> FindAllTarget()
-	{
-		Collider[] col = Physics.OverlapSphere(transform.position, towerData.towerAround);
-		List<TargetData> enemyUnitsInRange = new List<TargetData>();
-		foreach (Collider item in col)
-		{
-			if (item.tag != tag && item.tag.Contains(enemyTag))
-			{
-				Health TempHealth = item.GetComponent<Health>();
-				if (TempHealth != null && TempHealth.isAlive)
-					enemyUnitsInRange.Add(new TargetData(item.transform, TempHealth));
-			}
-		}
-		return enemyUnitsInRange;
-	}
+	
 }

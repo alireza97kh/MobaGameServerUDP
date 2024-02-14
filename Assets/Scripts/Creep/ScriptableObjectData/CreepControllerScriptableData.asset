@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a351daaa81598c4ba1fafb15e7e39ea, type: 3}
   m_Name: CreepControllerScriptableData
   m_EditorClassIdentifier: 
-  creeptAttackPlane: 3
-  creeptAround: 10
-  creepAttackDamage: 20
-  rotationSpeed: 1000
+  attackRange: 10
+  detectionAround: 12
+  baseAttackDamage: 50
+  attackDellay: 0.5
+  sendSyncTick: 20
+  attackLayer:
+    serializedVersion: 2
+    m_Bits: 3584
+  maxHp: 1000
   creeptDecesionDellay: 0.1
-  creeptAttackDellay: 0.5
   score: {fileID: 11400000, guid: db6c0ce832503a64bb63cb758c6244e1, type: 2}
-  creepDetection: 10
-  sendSyncMessageTick: 30
-  creepDamageType: 0
-  creepMaxHp: 1000

@@ -95,16 +95,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14fb9edf5a2fe56479ed5eee4ab212e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data: {fileID: 0}
+  element: 1
+  team: 0
+  elementId: 0
+  enemyTag: 
+  health: {fileID: 8435274060785129566}
+  Collider: {fileID: 67094164789010371}
+  agent: {fileID: 8741269679766455607}
+  isAlive: 0
+  target: {fileID: 0}
   heroData: {fileID: 11400000, guid: 59b7662bc80a58a4b9edc5dd47ba8fff, type: 2}
-  pId: 0
   heroId: 0
   userId: 
-  team: 0
   xp: 0
   gold: 0
-  sendSyncTick: 5
-  agent: {fileID: 8741269679766455607}
-  health: {fileID: 8435274060785129566}
   ability: {fileID: 2315721559114585718}
 --- !u!114 &8435274060785129566
 MonoBehaviour:
@@ -119,7 +124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
-  unitType: 0
+  unitType: 1
   lobbyKey: 
   isAlive: 1
   maxHp: 0

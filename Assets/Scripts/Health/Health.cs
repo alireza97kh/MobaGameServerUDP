@@ -9,10 +9,10 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public ushort id;
+	[HideInInspector] public ushort id;
     [EnumToggleButtons]
-    public CurrentUnitHealthType unitType;
-    public string lobbyKey;
+    public GameElement unitType;
+	[HideInInspector] public string lobbyKey;
     public bool isAlive = true;
     public int HpCount { 
         get { return _hpCount; }
@@ -33,7 +33,7 @@ public class Health : MonoBehaviour
     public int magicResistance = 0;
 
     private Dictionary<string, int> attackers;
-    public void Init(string _lobbyKey, ushort _id, CurrentUnitHealthType _unitType)
+    public void Init(string _lobbyKey, ushort _id, GameElement _unitType)
 	{
         unitType = _unitType;
         lobbyKey = _lobbyKey;

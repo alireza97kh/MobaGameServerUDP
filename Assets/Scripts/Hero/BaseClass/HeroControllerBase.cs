@@ -9,44 +9,39 @@ using UnityEngine.AI;
 using Sirenix.OdinInspector;
 using ReadOnlyAttribute = Sirenix.OdinInspector.ReadOnlyAttribute;
 using UnityEngine.Windows;
-public abstract class HeroControllerBase : MonoBehaviour
+using System;
+using TreeEditor;
+using TMPro;
+public abstract class HeroControllerBase : ObjectInGameBase
 {
 	[SerializeField] protected HeroControllerBaseData heroData;
-	[ReadOnly] public ushort pId;
     [ReadOnly] public ushort heroId = 0;
     [ReadOnly] public string userId;
 
-	[ReadOnly] public Teams team;
 	[ReadOnly] public int xp = 0;
     [ReadOnly] public int gold = 0;
 
-    public int sendSyncTick = 10;
 
-	public NavMeshAgent agent;
-	public Health health;
 	public AbilityExecutor ability;
 
-	protected LobbyManager lobbyManager;
 	protected int timer = 0;
 
+	private DateTime lastAttackTime;
 
-	protected TargetData target;
-	protected string enemyTag = "";
-    public virtual void Init()
+    public override void Init(LobbyManager _manager, ushort _elementId)
     {
-		tag = team.ToString() + "Hero";
-		enemyTag = team == Teams.Team1 ? "Team2" : "Team1";
-		health.maxHp = heroData.heroMaxHp;
-		health.Init(lobbyManager.lobbyKey, pId, CurrentUnitHealthType.Hero);
+		data = heroData;
+		base.Init(_manager, _elementId);
+		lastAttackTime = DateTime.Now;
 		SendCreateMessage();
 	}
 
     protected virtual void Update()
     {
-		if (lobbyManager != null && lobbyManager.gameStarted)
+		if (manager != null && manager.gameStarted)
 		{
 			timer++;
-			if (timer > sendSyncTick)
+			if (timer > data.sendSyncTick)
 			{
 				SendSyncMessage();
 				timer = 0;
@@ -54,29 +49,23 @@ public abstract class HeroControllerBase : MonoBehaviour
 		}
 	}
 
-
-	#region private Methods
-	
-	#endregion
-
-
 	#region Send Message
 	private void SendCreateMessage()
 	{
 		Message heroInitMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.CreateHero);
 		heroInitMessage = HelperMethods.Instance.AddVector3(transform.position, heroInitMessage);
 		heroInitMessage.AddBool(team == Teams.Team1);
-		heroInitMessage.AddUShort(pId);
+		heroInitMessage.AddUShort(elementId);
 		heroInitMessage.AddUShort(heroId);
-		heroInitMessage.AddString(lobbyManager.playersInLobby[pId].player.userId);
-		NetworkManager.Instance.SendMessageToAllUsersInLobby(heroInitMessage, lobbyManager.lobbyKey);
+		heroInitMessage.AddString(manager.playersInLobby[elementId].player.userId);
+		NetworkManager.Instance.SendMessageToAllUsersInLobby(heroInitMessage, manager.lobbyKey);
 	}
 	private void SendSyncMessage()
 	{
 		Message syncMessage = Message.Create(MessageSendMode.Unreliable, ServerToClientId.Sync);
-		syncMessage.AddUShort(pId);
+		syncMessage.AddUShort(elementId);
 		syncMessage = HelperMethods.Instance.AddVector3(transform.position, syncMessage);
-		NetworkManager.Instance.SendMessageToAllUsersInLobby(syncMessage, lobbyManager.lobbyKey);
+		NetworkManager.Instance.SendMessageToAllUsersInLobby(syncMessage, manager.lobbyKey);
 
 	}
 	#endregion
@@ -85,8 +74,8 @@ public abstract class HeroControllerBase : MonoBehaviour
 	public void OnSelectedHero(ushort _heroId, ushort _pId, LobbyManager _manager)
 	{
 		heroId = _heroId;
-		lobbyManager = _manager;
-		pId = _pId;
+		manager = _manager;
+		elementId = _pId;
 	}
 	
 	#endregion
@@ -94,15 +83,22 @@ public abstract class HeroControllerBase : MonoBehaviour
 	#region Input Controller
 	protected virtual void BaseAttack()
 	{
-		if (true)
+		if ((DateTime.Now - lastAttackTime).Seconds < heroData.attackDellay)
+			return;
+		lastAttackTime = DateTime.Now;
+		List<ObjectInGameBase> allTargets = FindAllTarget();
+		if (allTargets.Count > 0)
 		{
-
+			if (CheckTargeIsAvaiable(FindNearestEnemy(allTargets)))
+				target.DecreaseHp(heroData.baseAttackDamage, DamageType.Physical, "hero" + heroId);
 		}
+
+		Message heroAttackMessge = Message.Create(MessageSendMode.Reliable, ServerToClientId.HeroAttack);
+
 	}
 	public virtual void PlayerInputMove(Message _heroInput)
 	{
 		HeroInputType heroInputType = (HeroInputType)_heroInput.GetUShort();
-
 		switch (heroInputType)
 		{
 			case HeroInputType.Movement:
@@ -111,7 +107,7 @@ public abstract class HeroControllerBase : MonoBehaviour
 				agent.SetDestination(transform.position + movement);
 				break;
 			case HeroInputType.BaseAttack:
-				Debug.LogError("User send Base Attack input");
+				BaseAttack();
 				break;
 			case HeroInputType.Ability:
 				Debug.LogError("User send Ability input");
@@ -121,39 +117,6 @@ public abstract class HeroControllerBase : MonoBehaviour
 			default:
 				break;
 		}
-	}
-	#endregion
-
-	#region	protected Methods
-	private bool CheckUnit(TargetData unit, string _tag)
-	{
-		return unit != null &&
-			unit.transform != null &&
-			unit.health != null &&
-			unit.health.isAlive &&
-			unit.transform.tag.Contains(_tag);
-	}
-	private bool CheckTargeIsInAttackRange(TargetData unit)
-	{
-		float distanceToTarget = Vector3.Distance(transform.position, unit.transform.position);
-		return (distanceToTarget < heroData.heroAttackArea);
-	}
-
-	private List<TargetData> FindAllTarget()
-	{
-		Collider[] col = Physics.OverlapSphere(transform.position, heroData.heroAttackArea);
-		List<TargetData> enemyUnitsInRange = new List<TargetData>();
-		foreach (Collider item in col)
-		{
-			if (item.tag != tag && item.tag.Contains(enemyTag))
-			{
-				Health TempHealth = item.GetComponent<Health>();
-				if (TempHealth != null && TempHealth.isAlive)
-					enemyUnitsInRange.Add(new TargetData(item.transform, TempHealth));
-			}
-		}
-		col[0].GetInstanceID();
-		return enemyUnitsInRange;
 	}
 	#endregion
 }

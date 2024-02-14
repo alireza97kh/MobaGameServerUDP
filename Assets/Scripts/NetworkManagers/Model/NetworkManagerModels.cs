@@ -30,7 +30,9 @@ namespace NetworkManagerModels
         SyncHealth,
         Sync,
         CreateTower,
-        TowerShoot
+        TowerShoot,
+        HeroAttack,
+        HeroAbility
     }
 
 

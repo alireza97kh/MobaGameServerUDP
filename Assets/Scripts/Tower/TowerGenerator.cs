@@ -9,14 +9,14 @@ public class TowerGenerator : MonoBehaviour
 {
     [SerializeField] private List<TowerController> towers = new List<TowerController>();
     private ushort towersId = 0;
-    public void Init(string lobbyKey)
+    public void Init(LobbyManager manager)
     {
         Message towerInitMessage = Message.Create(MessageSendMode.Reliable, ServerToClientId.CreateTower);
         towerInitMessage.AddUShort((ushort)towers.Count);
         foreach (var item in towers)
         {
             towersId++;
-            item.Init(lobbyKey, towersId);
+            item.Init(manager, towersId);
             towerInitMessage.AddUShort(towersId);
             towerInitMessage.AddUShort((ushort)item.team);
             towerInitMessage.AddUShort((ushort)item.line);
@@ -24,6 +24,6 @@ public class TowerGenerator : MonoBehaviour
             towerInitMessage = HelperMethods.Instance.AddShort(
                 item.transform.rotation.eulerAngles.y, towerInitMessage);
         }
-		NetworkManager.Instance.SendMessageToAllUsersInLobby(towerInitMessage, lobbyKey);
+		NetworkManager.Instance.SendMessageToAllUsersInLobby(towerInitMessage, manager.lobbyKey);
 	}
 }

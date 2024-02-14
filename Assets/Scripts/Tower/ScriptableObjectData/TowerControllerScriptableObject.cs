@@ -6,15 +6,8 @@ using UnityEngine;
 
 [System.Serializable]
 [CreateAssetMenu(fileName = "TowerControllerScriptableObject", menuName = "DobeilData/TowerControllerScriptableObject")]
-public class TowerControllerScriptableObject : ScriptableObject
+public class TowerControllerScriptableObject : ObjectInGameBaseData
 {
-    public float towerAround;
-    public ushort towerAttackDamage;
     public float towerDecesionDellay = 0.1f;
-    public float towerAttackDellay = 0.5f;
-    public int sendSyncMessageTick = 15;
-    [EnumToggleButtons]
-    public DamageType towerDamageType;
     public TowerActionScore towerActionScore;
-    public int towerMaxHp;
 }

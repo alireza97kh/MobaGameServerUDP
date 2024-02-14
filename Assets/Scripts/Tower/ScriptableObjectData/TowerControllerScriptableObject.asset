@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91bd51ab11b006b4bad0b81abae355f8, type: 3}
   m_Name: TowerControllerScriptableObject
   m_EditorClassIdentifier: 
-  towerAround: 10
-  towerAttackDamage: 60
+  attackRange: 15
+  detectionAround: 17
+  baseAttackDamage: 100
+  attackDellay: 0.25
+  sendSyncTick: 15
+  attackLayer:
+    serializedVersion: 2
+    m_Bits: 3584
+  maxHp: 2000
   towerDecesionDellay: 0.1
-  towerAttackDellay: 0.5
-  sendSyncMessageTick: 15
-  towerDamageType: 1
   towerActionScore: {fileID: 11400000, guid: 8d4d346131408664e9f293a7b871a154, type: 2}
-  towerMaxHp: 5000

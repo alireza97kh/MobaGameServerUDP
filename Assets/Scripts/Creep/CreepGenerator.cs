@@ -42,20 +42,20 @@ public class CreepGenerator : MonoBehaviour
 					{
 						allOfCreatedCreep[i].transform.position = transform.position;
 						allOfCreatedCreep[i].firstWaypoint = firstWaypoint;
-						allOfCreatedCreep[i].Init();
+						allOfCreatedCreep[i].Init(lobby, 0);
 						createNewCreepMessage.AddUShort((ushort)CreateCreepState.Restart);
-						createNewCreepMessage.AddUShort(allOfCreatedCreep[i].creepId);
+						createNewCreepMessage.AddUShort(allOfCreatedCreep[i].elementId);
 						Count--;
 					}
 				}
 				for (int i = 0; i < Count; i++)
 				{
 					CreepController newCreep = Instantiate(generatorData.creeptsPrefab, transform.position, Quaternion.identity, transform);
-					newCreep.tag = generatorData.creepTag;
 					newCreep.firstWaypoint = firstWaypoint;
-					newCreep.Init(lobbyKey, CreepManager.Instance.GetNewCreepId());
+					newCreep.team = generatorData.generatorTeam;
+					newCreep.Init(lobby, CreepManager.Instance.GetNewCreepId());
 					createNewCreepMessage.AddUShort((ushort)CreateCreepState.Instantiate);
-					createNewCreepMessage.AddUShort(newCreep.creepId);
+					createNewCreepMessage.AddUShort(newCreep.elementId);
 					allOfCreatedCreep.Add(newCreep);
 				}
 				NetworkManager.Instance.SendMessageToAllUsersInLobby(createNewCreepMessage, lobbyKey);

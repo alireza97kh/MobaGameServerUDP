@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2253339937996552773}
   - component: {fileID: 8833221591947777963}
   - component: {fileID: 7990302569469025939}
+  - component: {fileID: 996273546669110073}
   m_Layer: 10
   m_Name: Tower
   m_TagString: Team1Tower
@@ -26,14 +27,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5846217926035805640}
-  m_LocalRotation: {x: -0.6532815, y: -0.27059805, z: -0.27059805, w: 0.6532815}
-  m_LocalPosition: {x: 125, y: 7, z: 35}
+  m_LocalRotation: {x: 0, y: -0.38268343, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: -45, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
 --- !u!114 &2253339937996552773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46,11 +47,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da24697435ea304ea3f946ecccc2896, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  data: {fileID: 0}
+  element: 3
   team: 0
+  health: {fileID: 8833221591947777963}
+  Collider: {fileID: 7990302569469025939}
+  agent: {fileID: 0}
+  isAlive: 0
+  elementId: 0
+  enemyTag: 
+  target: {fileID: 0}
   line: 1
-  towerHealth: {fileID: 8833221591947777963}
   towerData: {fileID: 11400000, guid: 32beadcf6b26a3041bf837f559b7d963, type: 2}
-  id: 0
 --- !u!114 &8833221591947777963
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,7 +72,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
-  unitType: 1
+  unitType: 3
   lobbyKey: 
   isAlive: 1
   maxHp: 2000
@@ -81,9 +89,31 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5846217926035805640}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.5
   m_Height: 3
-  m_Direction: 2
-  m_Center: {x: 0, y: 0, z: 1}
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!195 &996273546669110073
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5846217926035805640}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4

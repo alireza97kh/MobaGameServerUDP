@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12aaa9530036abd4d8e7095e05e731ee, type: 3}
   m_Name: DobeilHero
   m_EditorClassIdentifier: 
+  attackRange: 5
+  detectionAround: 5
+  baseAttackDamage: 200
+  attackDellay: 0.2
+  sendSyncTick: 10
+  attackLayer:
+    serializedVersion: 2
+    m_Bits: 3584
+  maxHp: 5000
   heroName: Dobeil
   heroIcon: {fileID: 0}
   heroSpeed: 15
-  heroAttackSpeed: 0.9
-  heroAttackDellay: 0
-  heroAttackArea: 10
-  heroBaseAttackDamage: 300
-  heroMaxHp: 4000
